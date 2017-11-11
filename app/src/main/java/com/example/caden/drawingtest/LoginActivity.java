@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -26,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar progressbar;
 
     FirebaseAuth mAuth;
+//    GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,13 @@ public class LoginActivity extends AppCompatActivity {
 
         /* FireBase */
         mAuth = FirebaseAuth.getInstance();
+
+        /* Google Login */
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+//        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
     }
 
@@ -73,6 +82,11 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void google_login(final View v) {
+//        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+//        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     public void register(View v){
