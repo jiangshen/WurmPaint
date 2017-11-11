@@ -74,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            // do your stuff
-            Log.d(TAG, user.getUid());
-        } else {
-            signInAnonymously();
-        }
+//        if (user != null) {
+//            // do your stuff
+//            Log.d(TAG, user.getUid());
+//        } else {
+//            signInAnonymously();
+//        }
 
         currImgNo = 0;
         tvImgNo = findViewById(R.id.tv_img_no);
@@ -90,10 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         img_v_touch_handler();
 
-//        tvX = (TextView) findViewById(R.id.tvX);
-//        tvY = (TextView) findViewById(R.id.tvY);
-
-        imgV = (ImageView) findViewById(R.id.imageView);
+        imgV = findViewById(R.id.imageView);
         imgV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -149,20 +146,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void signInAnonymously() {
-        mAuth.signInAnonymously().addOnSuccessListener(this, new  OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(AuthResult authResult) {
-                // do your stuff
-            }
-        })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        Log.e("TAG", "signInAnonymously:FAILURE", exception);
-                    }
-                });
-    }
+//    private void signInAnonymously() {
+//        mAuth.signInAnonymously().addOnSuccessListener(this, new  OnSuccessListener<AuthResult>() {
+//            @Override
+//            public void onSuccess(AuthResult authResult) {
+//                // do your stuff
+//            }
+//        })
+//                .addOnFailureListener(this, new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception exception) {
+//                        Log.e("TAG", "signInAnonymously:FAILURE", exception);
+//                    }
+//                });
+//    }
 
     public boolean onTouchEvent(MotionEvent event) {
 //        tvX.setText(String.valueOf((int)event.getX()));

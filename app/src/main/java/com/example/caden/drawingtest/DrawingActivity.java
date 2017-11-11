@@ -74,7 +74,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
         im = new ImageManager();
         brushColor = getIntent().getIntExtra("color", 0);
-        btnSend = (Button) findViewById(R.id.btn_send);
+        btnSend = findViewById(R.id.btn_send);
 
         mStorage = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
