@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -25,7 +24,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
-    final String TAG = "DT.LoginActivity";
     final int RC_SIGN_IN = 1778;
 
     View root;
@@ -63,9 +61,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            Log.d(TAG, "Current user is null");
-        } else {
+        if (currentUser != null) {
             updateUI();
         }
     }
@@ -94,18 +90,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             progressbar.setVisibility(View.VISIBLE);
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 fireBaseAuthWithGoogle(account);
             } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
                 progressbar.setVisibility(View.INVISIBLE);
-                Log.w(TAG, "Google sign in failed", e);
             }
         }
     }
@@ -131,21 +123,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void login(final View v) {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
-
         progressbar.setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressbar.setVisibility(View.INVISIBLE);
-                        if (task.isSuccessful()) {
-                            updateUI();
-                        } else {
-                            Snackbar sb = Snackbar.make(v, "\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 "
-                                    + task.getException().getMessage(), Snackbar.LENGTH_LONG);
-                            sb.show();
-                        }
-                    }
-                });
+            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                progressbar.setVisibility(View.INVISIBLE);
+                if (task.isSuccessful()) {
+                    updateUI();
+                } else {
+                    Snackbar sb = Snackbar.make(v, "\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 "
+                            + task.getException().getMessage(), Snackbar.LENGTH_LONG);
+                    sb.show();
+                }
+            }
+        });
     }
 }
