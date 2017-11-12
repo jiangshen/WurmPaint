@@ -16,8 +16,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    final String TAG = "DT.RegistrationActivity";
-
     EditText txt_email;
     EditText txt_psw;
     EditText txt_psw_cfm;
@@ -68,7 +66,7 @@ public class RegistrationActivity extends AppCompatActivity {
             .show();
     }
 
-    public void registerUser(final View v) {
+    public void registerUser(View v) {
         String email = txt_email.getText().toString();
         String password = txt_psw.getText().toString();
 
@@ -76,11 +74,9 @@ public class RegistrationActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "createUserWithEmail:success");
                         transition();
                     } else {
                         // If sign in fails, display a message to the user.
-                        Log.w(TAG, "createUserWithEmail:failure", task.getException());
                         Snackbar sd = Snackbar.make(v, "\uD83D\uDE21\uD83D\uDE21\uD83D\uDE21 "
                                 + task.getException().getMessage(), Snackbar.LENGTH_LONG);
                         sd.show();

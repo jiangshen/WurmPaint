@@ -142,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             });
     }
 
-    public void login(final View v) {
+    public void login(View v) {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
         progressbar.setVisibility(View.VISIBLE);
