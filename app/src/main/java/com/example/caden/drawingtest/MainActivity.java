@@ -38,9 +38,7 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    final String TAG = "DT.MainActivity";
-
-//    Firebase Storage
+//    FireBase Storage
     FirebaseStorage mStorage;
     FirebaseAuth mAuth;
 
@@ -74,12 +72,6 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         FirebaseUser user = mAuth.getCurrentUser();
-//        if (user != null) {
-//            // do your stuff
-//            Log.d(TAG, user.getUid());
-//        } else {
-//            signInAnonymously();
-//        }
 
         currImgNo = 0;
         tvImgNo = findViewById(R.id.tv_img_no);
@@ -146,24 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    private void signInAnonymously() {
-//        mAuth.signInAnonymously().addOnSuccessListener(this, new  OnSuccessListener<AuthResult>() {
-//            @Override
-//            public void onSuccess(AuthResult authResult) {
-//                // do your stuff
-//            }
-//        })
-//                .addOnFailureListener(this, new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception exception) {
-//                        Log.e("TAG", "signInAnonymously:FAILURE", exception);
-//                    }
-//                });
-//    }
-
     public boolean onTouchEvent(MotionEvent event) {
-//        tvX.setText(String.valueOf((int)event.getX()));
-//        tvY.setText(String.valueOf((int)event.getY()));
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_MOVE:

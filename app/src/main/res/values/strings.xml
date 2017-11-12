@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">DrawingTest</string>
+    <string name="app_name">Wurm Paint</string>
+    <string name="about_text">Created by Caden 2017</string>
 </resources>
