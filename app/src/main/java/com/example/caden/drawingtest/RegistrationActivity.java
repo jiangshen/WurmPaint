@@ -6,7 +6,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +22,7 @@ public class RegistrationActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
@@ -66,6 +66,7 @@ public class RegistrationActivity extends AppCompatActivity {
             .show();
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void registerUser(View v) {
         String email = txt_email.getText().toString();
         String password = txt_psw.getText().toString();
@@ -77,8 +78,9 @@ public class RegistrationActivity extends AppCompatActivity {
                         transition();
                     } else {
                         // If sign in fails, display a message to the user.
-                        Snackbar sd = Snackbar.make(v, "\uD83D\uDE21\uD83D\uDE21\uD83D\uDE21 "
-                                + task.getException().getMessage(), Snackbar.LENGTH_LONG);
+                        Snackbar sd = Snackbar.make(v,
+                                String.format("\uD83D\uDE21\uD83D\uDE21\uD83D\uDE21 %s",
+                                        task.getException().getMessage()), Snackbar.LENGTH_LONG);
                         sd.show();
                     }
                 });

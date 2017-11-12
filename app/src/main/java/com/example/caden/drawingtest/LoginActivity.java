@@ -38,18 +38,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /* Layout Setup */
         setContentView(R.layout.activity_login);
         Toolbar toolbar = findViewById(R.id.login_toolbar);
         setSupportActionBar(toolbar);
-
-        /* Layout Setup */
         root = findViewById(R.id.cl_login);
         emailField = findViewById(R.id.text_email);
         passwordField = findViewById(R.id.text_password);
         progressbar = findViewById(R.id.pbar);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
-        /* FireBase */
+        /* FireBase Auth */
         mAuth = FirebaseAuth.getInstance();
 
         /* Google Login */
@@ -127,6 +127,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void fireBaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -135,13 +136,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (task.isSuccessful()) {
                     updateUI();
                 } else {
-                    Snackbar sb = Snackbar.make(root, "\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 "
-                            + task.getException().getMessage(), Snackbar.LENGTH_LONG);
+                    Snackbar sb = Snackbar.make(root,
+                            String.format("\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 %s",
+                                    task.getException().getMessage()), Snackbar.LENGTH_LONG);
                     sb.show();
                 }
             });
     }
 
+    @SuppressWarnings("ConstantConditions")
     public void login(View v) {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
@@ -152,8 +155,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (task.isSuccessful()) {
                     updateUI();
                 } else {
-                    Snackbar sb = Snackbar.make(v, "\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 "
-                            + task.getException().getMessage(), Snackbar.LENGTH_LONG);
+                    Snackbar sb = Snackbar.make(v,
+                            String.format("\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 %s",
+                                    task.getException().getMessage()), Snackbar.LENGTH_LONG);
                     sb.show();
                 }
             });
