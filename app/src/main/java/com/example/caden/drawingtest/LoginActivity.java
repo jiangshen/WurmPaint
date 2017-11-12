@@ -1,8 +1,6 @@
 package com.example.caden.drawingtest;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -19,10 +17,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -91,11 +87,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         new AlertDialog.Builder(this)
                 .setMessage(R.string.about_text)
                 .setTitle(R.string.app_name)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                }).show();
+                .setPositiveButton("OK", (dialog, id) -> dialog.cancel())
+                .show();
     }
 
     public void register(View v){
@@ -137,17 +130,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void fireBaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
-            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    progressbar.setVisibility(View.INVISIBLE);
-                    if (task.isSuccessful()) {
-                        updateUI();
-                    } else {
-                        Snackbar sb = Snackbar.make(root, "\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 "
-                                + task.getException().getMessage(), Snackbar.LENGTH_LONG);
-                        sb.show();
-                    }
+            .addOnCompleteListener(this, task -> {
+                progressbar.setVisibility(View.INVISIBLE);
+                if (task.isSuccessful()) {
+                    updateUI();
+                } else {
+                    Snackbar sb = Snackbar.make(root, "\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 "
+                            + task.getException().getMessage(), Snackbar.LENGTH_LONG);
+                    sb.show();
                 }
             });
     }
@@ -157,9 +147,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String password = passwordField.getText().toString();
         progressbar.setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
+            .addOnCompleteListener(this, task -> {
                 progressbar.setVisibility(View.INVISIBLE);
                 if (task.isSuccessful()) {
                     updateUI();
@@ -168,7 +156,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             + task.getException().getMessage(), Snackbar.LENGTH_LONG);
                     sb.show();
                 }
-            }
-        });
+            });
     }
 }
