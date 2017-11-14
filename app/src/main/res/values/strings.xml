@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Wurm Paint</string>
     <string name="about_text">Created by Caden 2017</string>
+
+    <string name="start_text">Start</string>
+    <string name="register_text">Register</string>
+    <string name="sign_in_text">Sign In</string>
+    <string name="email_text">Email</string>
+    <string name="password_text">Password</string>
+    <string name="confirm_password_text">Confirm Password</string>
+    <string name="or_text">OR</string>
+    <string name="no_account_text">No account? Register now!</string>
 </resources>

@@ -1,16 +1,13 @@
 package com.example.caden.drawingtest;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -20,12 +17,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.flask.colorpicker.ColorPickerView;
-import com.flask.colorpicker.OnColorSelectedListener;
-import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
@@ -83,22 +75,17 @@ public class MainActivity extends AppCompatActivity {
         img_v_touch_handler();
 
         imgV = findViewById(R.id.imageView);
-        imgV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                img_v_touch_handler();
-            }
-        });
+        imgV.setOnClickListener(view -> img_v_touch_handler());
 
-        sb = (SeekBar) findViewById((R.id.seekBar));
+        sb = findViewById((R.id.seekBar));
 
-        btnColor = (Button) findViewById(R.id.btn_color);
+        btnColor = findViewById(R.id.btn_color);
 
         brushColor = btnColor.getCurrentTextColor();
         ImageManager.setBrushColor(brushColor);
 
-        btnUpload = (Button) findViewById(R.id.btn_upload);
-        pBar = (ProgressBar) findViewById(R.id.progress_bar);
+        btnUpload = findViewById(R.id.btn_upload);
+        pBar = findViewById(R.id.progress_bar);
     }
 
     public void temp(View v) {
@@ -112,28 +99,20 @@ public class MainActivity extends AppCompatActivity {
         im.setImgFileName(String.valueOf(currImgNo));
         tvImgNo.setText(currImgNo + ".png");
 
-        String path = "img/" + currImgNo + ".png";
-
-        Log.d("TAG", path);
+        String path = "img/2017-09-23/" + currImgNo + ".png";
 
         StorageReference storageRef = mStorage.getReference();
         StorageReference pathReference = storageRef.child(path);
 
-        final long ONE_KILOBYTE = 1 * 1024;
-        pathReference.getBytes(ONE_KILOBYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                im.setImage(bytes);
-                im.setImageID(currImgNo);
-                Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                imgV.setImageBitmap(Bitmap.createScaledBitmap(bmp, imgV.getWidth(),
-                        imgV.getHeight(), false));
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
+        final long ONE_KILOBYTE = 1024;
+        pathReference.getBytes(ONE_KILOBYTE).addOnSuccessListener(bytes -> {
+            im.setImage(bytes);
+            im.setImageID(currImgNo);
+            Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            imgV.setImageBitmap(Bitmap.createScaledBitmap(bmp, imgV.getWidth(),
+                    imgV.getHeight(), false));
+        }).addOnFailureListener(exception -> {
+            // Handle any errors
         });
 
     }
@@ -178,12 +157,9 @@ public class MainActivity extends AppCompatActivity {
                 .setCustomMetadata("text", "my first upload")
                 .build();
         UploadTask upTask = mStorageRef.putBytes(sendImg(), metadata);
-        upTask.addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                pBar.setVisibility(View.INVISIBLE);
-                btnUpload.setEnabled(true);
-            }
+        upTask.addOnSuccessListener(this, taskSnapshot -> {
+            pBar.setVisibility(View.INVISIBLE);
+            btnUpload.setEnabled(true);
         });
     }
 
@@ -196,7 +172,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if(requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK){
             Uri imageUri = data.getData();
             imgV.setImageURI(imageUri);
@@ -210,25 +185,13 @@ public class MainActivity extends AppCompatActivity {
                 .initialColor(Color.parseColor("#FFFFFF"))
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                 .density(12)
-                .setOnColorSelectedListener(new OnColorSelectedListener() {
-                    @Override
-                    public void onColorSelected(int selectedColor) {
-                        Log.d("color", "onColorSelected: #" + Integer.toHexString(selectedColor));
-                    }
+                .setOnColorSelectedListener(selectedColor -> {})
+                .setPositiveButton("ok", (dialog, selectedColor, allColors) -> {
+                    btnColor.setTextColor(selectedColor);
+                    brushColor = selectedColor;
+                    ImageManager.setBrushColor(selectedColor);
                 })
-                .setPositiveButton("ok", new ColorPickerClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
-                        btnColor.setTextColor(selectedColor);
-                        brushColor = selectedColor;
-                        ImageManager.setBrushColor(selectedColor);
-                    }
-                })
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
+                .setNegativeButton("cancel", (dialog, which) -> {})
                 .build()
                 .show();
     }

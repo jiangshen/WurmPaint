@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">虫涂涂</string>
+    <string name="start_text">开始</string>
+    <string name="register_text">注册</string>
+    <string name="sign_in_text">登陆</string>
+    <string name="email_text">电邮</string>
+    <string name="password_text">密码</string>
+    <string name="confirm_password_text">再次输入密码</string>
+    <string name="or_text">或</string>
+    <string name="no_account_text">没账号？注册吧！</string>
+</resources>
