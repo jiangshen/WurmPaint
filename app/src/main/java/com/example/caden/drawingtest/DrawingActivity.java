@@ -7,9 +7,13 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -31,7 +35,8 @@ import java.util.UUID;
 
 public class DrawingActivity extends AppCompatActivity implements View.OnTouchListener {
 
-    final int dp56 = dpToPx(56);
+    /* Constants */
+    int dp56;
 
     // views
     private DrawModel drawModel;
@@ -49,6 +54,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
+    Toolbar toolbar;
     private ProgressBar barSend;
     private FloatingActionButton fabSend;
 
@@ -62,6 +68,8 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawing);
+        toolbar = findViewById(R.id.drawing_toolbar);
+        setSupportActionBar(toolbar);
 
         //get drawing view from XML (where the finger writes the number)
         drawView = findViewById(R.id.draw);
@@ -69,6 +77,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_WIDTH);
         clDrawMain = findViewById(R.id.cl_draw_main);
         constraintSet.clone(clDrawMain);
+        dp56 = dpToPx(56);
 
         //init the view with the model object
         drawView.setModel(drawModel);
@@ -84,6 +93,28 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         mStorage = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.standard_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_info) {
+            about_screen();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void about_screen() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.about_text)
+                .setTitle(R.string.app_name)
+                .setPositiveButton("OK", (dialog, id) -> dialog.cancel())
+                .show();
     }
 
     @Override
@@ -178,20 +209,16 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
     public void sendImage(View v) {
 
-        int height = findViewById(R.id.cv_drawview).getHeight();
+        int dvHeight = findViewById(R.id.cv_drawview).getHeight();
 
         TransitionManager.beginDelayedTransition(clDrawMain);
         constraintSet.constrainHeight(R.id.fab_send, 0);
         constraintSet.constrainWidth(R.id.fab_send, 0);
         constraintSet.constrainWidth(R.id.pbar_send, dp56);
         constraintSet.constrainHeight(R.id.pbar_send, dp56);
-
         constraintSet.constrainHeight(R.id.cv_drawview, 0);
-
+        constraintSet.constrainHeight(R.id.drawing_ll, dvHeight / 2);
         constraintSet.applyTo(clDrawMain);
-
-
-
 
         Bitmap bmp = drawView.getBitmapData();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -219,9 +246,9 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
             constraintSet.constrainHeight(R.id.pbar_send, 0);
             constraintSet.constrainHeight(R.id.fab_send, dp56);
             constraintSet.constrainWidth(R.id.fab_send, dp56);
-            constraintSet.constrainHeight(R.id.cv_drawview, height);
+            constraintSet.constrainHeight(R.id.cv_drawview, dvHeight);
+            constraintSet.constrainHeight(R.id.drawing_ll, 0);
             constraintSet.applyTo(clDrawMain);
-
         });
 
         /* Update Database Reference */

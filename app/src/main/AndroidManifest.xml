@@ -43,9 +43,7 @@
         <activity
             android:name=".DrawingActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-
-
+            android:theme="@style/AppTheme.NoActionBar" />
 
     </application>
 
