@@ -4,12 +4,16 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.TransitionManager;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ProgressBar;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +31,8 @@ import java.util.UUID;
 
 public class DrawingActivity extends AppCompatActivity implements View.OnTouchListener {
 
+    final int dp56 = dpToPx(56);
+
     // views
     private DrawModel drawModel;
     private DrawView drawView;
@@ -43,7 +49,11 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
-    private Button btnSend;
+    private ProgressBar barSend;
+    private FloatingActionButton fabSend;
+
+    ConstraintLayout clDrawMain;
+    ConstraintSet constraintSet = new ConstraintSet();
 
     private static final int PIXEL_WIDTH = 280;
 
@@ -54,9 +64,11 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         setContentView(R.layout.activity_drawing);
 
         //get drawing view from XML (where the finger writes the number)
-        drawView = (DrawView) findViewById(R.id.draw);
+        drawView = findViewById(R.id.draw);
         //get the model object
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_WIDTH);
+        clDrawMain = findViewById(R.id.cl_draw_main);
+        constraintSet.clone(clDrawMain);
 
         //init the view with the model object
         drawView.setModel(drawModel);
@@ -65,7 +77,9 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
         im = new ImageManager();
         brushColor = getIntent().getIntExtra("color", 0);
-        btnSend = findViewById(R.id.btn_send);
+
+        fabSend = findViewById(R.id.fab_send);
+        barSend = findViewById(R.id.pbar_send);
 
         mStorage = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -162,15 +176,29 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         drawView.invalidate();
     }
 
-    public void upload(View v) {
-        btnSend.setEnabled(false);
+    public void sendImage(View v) {
+
+        int height = findViewById(R.id.cv_drawview).getHeight();
+
+        TransitionManager.beginDelayedTransition(clDrawMain);
+        constraintSet.constrainHeight(R.id.fab_send, 0);
+        constraintSet.constrainWidth(R.id.fab_send, 0);
+        constraintSet.constrainWidth(R.id.pbar_send, dp56);
+        constraintSet.constrainHeight(R.id.pbar_send, dp56);
+
+        constraintSet.constrainHeight(R.id.cv_drawview, 0);
+
+        constraintSet.applyTo(clDrawMain);
+
+
+
 
         Bitmap bmp = drawView.getBitmapData();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.JPEG, 80, baos);
 
         UUID uuid = UUID.randomUUID();
-        DateFormat dateFormat = new SimpleDateFormat("EEE yyyy-MM-dd");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EEE");
         DateFormat timeFormat = new SimpleDateFormat("hh:mm:ss aaa");
         DateFormat uploadFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
@@ -186,12 +214,29 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                 .build();
         UploadTask upTask = mStorageRef.putBytes(baos.toByteArray(), metadata);
         upTask.addOnSuccessListener(this, taskSnapshot -> {
-            btnSend.setEnabled(true);
+            TransitionManager.beginDelayedTransition(clDrawMain);
+            constraintSet.constrainWidth(R.id.pbar_send, 0);
+            constraintSet.constrainHeight(R.id.pbar_send, 0);
+            constraintSet.constrainHeight(R.id.fab_send, dp56);
+            constraintSet.constrainWidth(R.id.fab_send, dp56);
+            constraintSet.constrainHeight(R.id.cv_drawview, height);
+            constraintSet.applyTo(clDrawMain);
+
         });
 
         /* Update Database Reference */
         mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("image_name").setValue(uuid.toString());
         mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("username").setValue(u.getEmail());
         mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("user_uid").setValue(u.getUid());
+    }
+
+    /**
+     * Converts dp into pixel values
+     * @param dp    display pixels
+     * @return      pixel values
+     */
+    private int dpToPx(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                dp, getResources().getDisplayMetrics());
     }
 }
