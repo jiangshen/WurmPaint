@@ -1,7 +1,9 @@
 package com.example.caden.drawingtest;
 
 import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -11,13 +13,17 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.flask.colorpicker.ColorPickerView;
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -47,7 +53,9 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     private float mLastY;
 
     private ImageManager im;
-    private int brushColor;
+    int brushColor;
+    Button btnBrushColor;
+
 
     //    FireBase
     private FirebaseStorage mStorage;
@@ -75,6 +83,8 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         drawView = findViewById(R.id.draw);
         //get the model object
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_WIDTH);
+        btnBrushColor = findViewById(R.id.btn_brush_color);
+//        brushColor = btnBrushColor.getBackgroundTintList();
         clDrawMain = findViewById(R.id.cl_draw_main);
         constraintSet.clone(clDrawMain);
         dp56 = dpToPx(56);
@@ -85,7 +95,6 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         drawView.setOnTouchListener(this);
 
         im = new ImageManager();
-        brushColor = getIntent().getIntExtra("color", 0);
 
         fabSend = findViewById(R.id.fab_send);
         barSend = findViewById(R.id.pbar_send);
@@ -226,7 +235,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
         UUID uuid = UUID.randomUUID();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EEE");
-        DateFormat timeFormat = new SimpleDateFormat("hh:mm:ss aaa");
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         DateFormat uploadFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         String imageFileName = im.imgFileName;
@@ -253,8 +262,27 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
         /* Update Database Reference */
         mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("image_name").setValue(uuid.toString());
-        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("username").setValue(u.getEmail());
+        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("user_email").setValue(u.getEmail());
         mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("user_uid").setValue(u.getUid());
+    }
+
+    public void changeColor(View v) {
+        ColorPickerDialogBuilder
+                .with(this)
+                .setTitle("Pick Color")
+                .initialColor(Color.parseColor("#FFFFFF"))
+                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+                .lightnessSliderOnly()
+                .density(16)
+                .setOnColorSelectedListener(selectedColor -> {})
+                .setPositiveButton("ok", (dialog, selectedColor, allColors) -> {
+                    btnBrushColor.setBackgroundTintList(ColorStateList.valueOf(selectedColor));
+                    brushColor = selectedColor;
+                    ImageManager.setBrushColor(selectedColor);
+                })
+                .setNegativeButton("cancel", (dialog, which) -> {})
+                .build()
+                .show();
     }
 
     /**

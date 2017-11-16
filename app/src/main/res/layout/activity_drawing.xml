@@ -96,7 +96,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_user_email">
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/btn_brush_color"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="0dp"
             android:layout_height="52dp"
@@ -104,6 +104,7 @@
             android:layout_marginStart="8dp"
             android:drawableLeft="@drawable/ic_color_lens"
             android:drawableTint="#ffffff"
+            android:onClick="changeColor"
             android:text="Color"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
@@ -124,7 +125,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button3" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_brush_color" />
 
         <android.support.v7.widget.CardView
             android:id="@+id/cv_controls"
