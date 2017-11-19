@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
         }).addOnFailureListener(exception -> {
             // Handle any errors
         });
-
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -128,8 +127,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void transition(View v) {
         Intent i = new Intent(this, DrawActivity.class);
-        i.putExtra("thickness", sb.getProgress());
-        i.putExtra("color", brushColor);
+//        i.putExtra("thickness", sb.getProgress());
+//        i.putExtra("color", brushColor);
         startActivity(i);
     }
 

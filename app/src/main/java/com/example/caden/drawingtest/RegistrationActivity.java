@@ -88,7 +88,7 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void transition() {
-        Intent i = new Intent(this, MainActivity.class);
+        Intent i = new Intent(this, DrawingActivity.class);
         startActivity(i);
     }
 }

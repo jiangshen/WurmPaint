@@ -131,7 +131,6 @@ public class DrawActivity extends AppCompatActivity{
 //            important, you have to call the invalidate view before you start doing stuff
             invalidate();
             addBackground();
-
         }
 
         @Override

@@ -1,6 +1,7 @@
 package com.example.caden.drawingtest;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -13,7 +14,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,13 +21,17 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
@@ -37,12 +41,22 @@ import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 public class DrawingActivity extends AppCompatActivity implements View.OnTouchListener {
 
     /* Constants */
     int dp56;
+
+    /* Variables */
+    String currBatchName;
+    int currBatchSize;
+    int currImgNo;
+    Map uploadsDict;
 
     // views
     private DrawModel drawModel;
@@ -56,15 +70,16 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     int brushColor;
     Button btnBrushColor;
 
-
-    //    FireBase
+    /* FireBase */
     private FirebaseStorage mStorage;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
     Toolbar toolbar;
-    private ProgressBar barSend;
-    private FloatingActionButton fabSend;
+    ProgressBar barSend;
+    FloatingActionButton fabSend;
+    TextView tvUserEmail;
+    TextView tvImageName;
 
     ConstraintLayout clDrawMain;
     ConstraintSet constraintSet = new ConstraintSet();
@@ -79,34 +94,45 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         toolbar = findViewById(R.id.drawing_toolbar);
         setSupportActionBar(toolbar);
 
+        im = new ImageManager();
+        mStorage = FirebaseStorage.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        brushColor = Color.parseColor("#FF2646");
+        ImageManager.setBrushColor(brushColor);
+
+        FirebaseUser user = mAuth.getCurrentUser();
+
         //get drawing view from XML (where the finger writes the number)
         drawView = findViewById(R.id.draw);
+
+//        TODO where i put this function is very important!! due to firebase async!!
+        fireBaseRetrieveImage();
+
         //get the model object
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_WIDTH);
         btnBrushColor = findViewById(R.id.btn_brush_color);
 //        brushColor = btnBrushColor.getBackgroundTintList();
         clDrawMain = findViewById(R.id.cl_draw_main);
+        tvUserEmail = findViewById(R.id.tv_user_email);
+        tvUserEmail.setText(user.getEmail());
+        tvImageName = findViewById(R.id.tv_img_name);
+
         constraintSet.clone(clDrawMain);
         dp56 = dpToPx(56);
+        fabSend = findViewById(R.id.fab_send);
+        barSend = findViewById(R.id.pbar_send);
 
         //init the view with the model object
         drawView.setModel(drawModel);
         // give it a touch listener to activate when the user taps
         drawView.setOnTouchListener(this);
-
-        im = new ImageManager();
-
-        fabSend = findViewById(R.id.fab_send);
-        barSend = findViewById(R.id.pbar_send);
-
-        mStorage = FirebaseStorage.getInstance();
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.standard_menu, menu);
+        getMenuInflater().inflate(R.menu.drawing_menu, menu);
         return true;
     }
 
@@ -114,6 +140,10 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_info) {
             about_screen();
+        } else if (item.getItemId() == R.id.menu_sign_out) {
+            FirebaseAuth.getInstance().signOut();
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -242,7 +272,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         FirebaseUser u = mAuth.getCurrentUser();
 
         /* Upload Drawing */
-        String path = "uploaded/" + imageFileName + "/" + uploadFormat.format(date) + "/" + uuid + ".jpg";
+        String path = "uploaded/" + currBatchName + "/" + currImgNo + "/" + uuid + ".jpg";
         StorageReference mStorageRef = mStorage.getReference(path);
 
         StorageMetadata metadata = new StorageMetadata.Builder()
@@ -258,12 +288,20 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
             constraintSet.constrainHeight(R.id.cv_drawview, dvHeight);
             constraintSet.constrainHeight(R.id.drawing_ll, 0);
             constraintSet.applyTo(clDrawMain);
+//            Load the next one
+            nextImage(v);
         });
 
         /* Update Database Reference */
-        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("image_name").setValue(uuid.toString());
-        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("user_email").setValue(u.getEmail());
-        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("user_uid").setValue(u.getUid());
+        mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
+            .child(timeFormat.format(date)).child("image_name").setValue(uuid.toString());
+        mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
+                .child(timeFormat.format(date)).child("user_email").setValue(u.getEmail());
+        mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
+                .child(timeFormat.format(date)).child("user_uid").setValue(u.getUid());
+//        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("image_name").setValue(uuid.toString());
+//        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("user_email").setValue(u.getEmail());
+//        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("user_uid").setValue(u.getUid());
     }
 
     public void changeColor(View v) {
@@ -285,6 +323,78 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                 .show();
     }
 
+    private void fireBaseRetrieveImage() {
+        mDatabase.child("master_upload").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                initWithImage((HashMap)dataSnapshot.getValue());
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void initWithImage(HashMap dict) {
+//        Update
+        uploadsDict = dict;
+        Set keys = dict.keySet();
+        int keyLen = keys.size();
+        String[] keyArray = (String[]) keys.toArray(new String[keyLen]);
+        Random rand = new Random();
+//        TODO set is 0 based need to go from 0 to len - 1
+        int randKey = rand.nextInt(keyLen);
+
+        currBatchName = keyArray[randKey];
+
+//        FIXME HARDCODED CHANGE, use currBATCHNAME INSTEAD
+//        currBatchName = "2017-09-23";
+        currBatchSize = longToInt((Long) dict.get(currBatchName));
+
+        currImgNo = rand.nextInt(currBatchSize) + 1;
+
+        tvImageName.setText(String.format("%s / %d.png", currBatchName, currImgNo));
+
+//        FIXME load the image, check this code for errors!
+        /* Load Drawing */
+        String path = String.format("img/%s/%d.png", currBatchName, currImgNo);
+        StorageReference mStorageRef = mStorage.getReference(path);
+
+        final long ONE_KILOBYTE = 1024;
+        mStorageRef.getBytes(ONE_KILOBYTE).addOnSuccessListener(bytes -> {
+            im.setImage(bytes);
+            clear(findViewById(R.id.cl_draw_main));
+        }).addOnFailureListener(exception -> {
+            // Handle any errors
+        });
+    }
+
+    public void nextImage(View v) {
+        Set keys = uploadsDict.keySet();
+        int keyLen = keys.size();
+        String[] keyArray = (String[]) keys.toArray(new String[keyLen]);
+        Random rand = new Random();
+        int randKey = rand.nextInt(keyLen);
+        currBatchName = keyArray[randKey];
+        currBatchSize = longToInt((Long) uploadsDict.get(currBatchName));
+        currImgNo = rand.nextInt(currBatchSize) + 1;
+        tvImageName.setText(String.format("%s / %d.png", currBatchName, currImgNo));
+
+        /* Load Drawing */
+        String path = String.format("img/%s/%d.png", currBatchName, currImgNo);
+        StorageReference mStorageRef = mStorage.getReference(path);
+
+        final long ONE_KILOBYTE = 1024;
+        mStorageRef.getBytes(ONE_KILOBYTE).addOnSuccessListener(bytes -> {
+            im.setImage(bytes);
+            clear(v);
+        }).addOnFailureListener(exception -> {
+            // Handle any errors
+        });
+    }
+
     /**
      * Converts dp into pixel values
      * @param dp    display pixels
@@ -293,5 +403,13 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     private int dpToPx(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 dp, getResources().getDisplayMetrics());
+    }
+
+    private int longToInt(long l) {
+        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException
+                    (l + " cannot be cast to int without changing its value.");
+        }
+        return (int) l;
     }
 }

@@ -26,6 +26,11 @@
         </activity>
 
         <activity
+            android:name=".DrawingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
             android:name=".RegistrationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -39,11 +44,6 @@
             android:name=".DrawActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"/>
-
-        <activity
-            android:name=".DrawingActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
 
     </application>
 

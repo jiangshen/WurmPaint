@@ -10,4 +10,10 @@
     <string name="confirm_password_text">Confirm Password</string>
     <string name="or_text">OR</string>
     <string name="no_account_text">No account? Register now!</string>
+    <string name="color_text">Color</string>
+    <string name="clear_text">Clear</string>
+
+    <string name="placeholder_email">user@wurmpaint.co</string>
+    <string name="sign_out_text">Sign Out</string>
+    <string name="next_random_text">Next Random</string>
 </resources>

@@ -11,6 +11,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -54,13 +55,19 @@ public class DrawView extends View {
         }
     }
 
-    private void addBackground() {
-        Bitmap img = BitmapFactory.decodeByteArray(ImageManager.imgData, 0, ImageManager.imgData.length);
+    public void addBackground() {
+//      TODO Initialization there might be no image
+        if (ImageManager.imgData != null) {
+            Log.d("DRAWVIEW", "IMAGE DATA IS NOT NULL");
+            Bitmap img = BitmapFactory.decodeByteArray(ImageManager.imgData, 0, ImageManager.imgData.length);
 //            use the width of the screen, and for height, scale it proportional to how much width was scaled
-        Rect dest = new Rect(0, 0, mOffscreenBitmap.getWidth(), img.getHeight() * (mOffscreenBitmap.getWidth()/img.getWidth()));
-        Paint paint = new Paint();
-        paint.setFilterBitmap(true);
-        mOffscreenCanvas.drawBitmap(img, null, dest, paint);
+            Rect dest = new Rect(0, 0, mOffscreenBitmap.getWidth(), img.getHeight() * (mOffscreenBitmap.getWidth()/img.getWidth()));
+            Paint paint = new Paint();
+            paint.setFilterBitmap(true);
+            mOffscreenCanvas.drawBitmap(img, null, dest, paint);
+        } else {
+            Log.d("DRAWVIEW", "IMAGE DATA IS NULL");
+        }
     }
 
     //create the view, for a given length and width
