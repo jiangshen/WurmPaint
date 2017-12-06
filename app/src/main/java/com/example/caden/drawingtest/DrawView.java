@@ -30,7 +30,7 @@ public class DrawView extends View {
     private Matrix mMatrix = new Matrix();
     private Matrix mInvMatrix = new Matrix();
     private int mDrawnLineSize = 0;
-    private boolean mSetuped = false;
+    private boolean mHasBeenSetup = false;
 
     private float mTmpPoints[] = new float[2];
 
@@ -47,7 +47,8 @@ public class DrawView extends View {
     public void reset() {
         mDrawnLineSize = 0;
         if (mOffscreenBitmap != null) {
-            mPaint.setColor(Color.parseColor("#E0E0E0"));
+//            used to be gray #E0E0E0
+            mPaint.setColor(Color.parseColor("#000000"));
             int width = mOffscreenBitmap.getWidth();
             int height = mOffscreenBitmap.getHeight();
             mOffscreenCanvas.drawRect(new Rect(0, 0, width, height), mPaint);
@@ -61,7 +62,16 @@ public class DrawView extends View {
             Log.d("DRAWVIEW", "IMAGE DATA IS NOT NULL");
             Bitmap img = BitmapFactory.decodeByteArray(ImageManager.imgData, 0, ImageManager.imgData.length);
 //            use the width of the screen, and for height, scale it proportional to how much width was scaled
-            Rect dest = new Rect(0, 0, mOffscreenBitmap.getWidth(), img.getHeight() * (mOffscreenBitmap.getWidth()/img.getWidth()));
+//            (mOffscreenBitmap.getWidth() - img.getHeight()) / 2
+
+//            Log.d("img", img.getWidth() + "..." + img.getHeight());
+//            Log.d("offscreenbmp", mOffscreenBitmap.getWidth() + "..." + mOffscreenBitmap.getHeight());
+//            Log.d("drawview", this.getWidth() + "..." + this.getHeight());
+//            Log.d("calculated", 0 + "..." + 0 + "..." + mOffscreenBitmap.getWidth() + "..." + img.getHeight() * (mOffscreenBitmap.getWidth()/img.getWidth()));
+//            FIXME for now draw same dimensions as mOffscreenBitmap
+            Rect dest = new Rect(0, 0,
+                    mOffscreenBitmap.getWidth(),
+                    mOffscreenBitmap.getHeight());
             Paint paint = new Paint();
             paint.setFilterBitmap(true);
             mOffscreenCanvas.drawBitmap(img, null, dest, paint);
@@ -72,7 +82,7 @@ public class DrawView extends View {
 
     //create the view, for a given length and width
     private void setup() {
-        mSetuped = true;
+        mHasBeenSetup = true;
 
         // View size
         float width = getWidth();
@@ -98,7 +108,7 @@ public class DrawView extends View {
         mMatrix.setScale(scale, scale);
         mMatrix.postTranslate(dx, dy);
         mMatrix.invert(mInvMatrix);
-        mSetuped = true;
+        mHasBeenSetup = true;
     }
 
     @Override
@@ -108,7 +118,7 @@ public class DrawView extends View {
         if (mModel == null) {
             return;
         }
-        if (!mSetuped) {
+        if (!mHasBeenSetup) {
             setup();
         }
         if (mOffscreenBitmap == null) {
@@ -168,27 +178,27 @@ public class DrawView extends View {
     /**
      * Get 28x28 pixel data for input.
      */
-    public float[] getPixelData() {
-        if (mOffscreenBitmap == null) {
-            return null;
-        }
-
-        int width = mOffscreenBitmap.getWidth();
-        int height = mOffscreenBitmap.getHeight();
-
-        // Get 28x28 pixel data from bitmap
-        int[] pixels = new int[width * height];
-        mOffscreenBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-
-        float[] retPixels = new float[pixels.length];
-        for (int i = 0; i < pixels.length; ++i) {
-            // Set 0 for white and 255 for black pixel
-            int pix = pixels[i];
-            int b = pix & 0xff;
-            retPixels[i] = (float)((0xff - b)/255.0);
-        }
-        return retPixels;
-    }
+//    public float[] getPixelData() {
+//        if (mOffscreenBitmap == null) {
+//            return null;
+//        }
+//
+//        int width = mOffscreenBitmap.getWidth();
+//        int height = mOffscreenBitmap.getHeight();
+//
+//        // Get 28x28 pixel data from bitmap
+//        int[] pixels = new int[width * height];
+//        mOffscreenBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+//
+//        float[] retPixels = new float[pixels.length];
+//        for (int i = 0; i < pixels.length; ++i) {
+//            // Set 0 for white and 255 for black pixel
+//            int pix = pixels[i];
+//            int b = pix & 0xff;
+//            retPixels[i] = (float)((0xff - b)/255.0);
+//        }
+//        return retPixels;
+//    }
 
     public Bitmap getBitmapData() {
         return this.mOffscreenBitmap;

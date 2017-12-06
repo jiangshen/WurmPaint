@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Wurm Paint</string>
-    <string name="about_text">Created by Caden 2017</string>
+    <string name="about_text">Created by Caden 2017, I love to hear your feedback on the app,
+        feel free to post your response below!</string>
 
     <string name="start_text">Start</string>
     <string name="register_text">Register</string>

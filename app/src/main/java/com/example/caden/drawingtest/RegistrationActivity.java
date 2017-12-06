@@ -60,7 +60,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void about_screen() {
         new AlertDialog.Builder(this)
-            .setMessage(R.string.about_text)
+            .setMessage("Created by Caden 2017")
             .setTitle(R.string.app_name)
             .setPositiveButton("OK", (dialog, id) -> dialog.cancel())
             .show();

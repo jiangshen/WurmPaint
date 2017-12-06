@@ -1,5 +1,6 @@
 package com.example.caden.drawingtest;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -11,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -85,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void about_screen() {
         new AlertDialog.Builder(this)
-                .setMessage(R.string.about_text)
+                .setMessage("Created by Caden 2017")
                 .setTitle(R.string.app_name)
                 .setPositiveButton("OK", (dialog, id) -> dialog.cancel())
                 .show();

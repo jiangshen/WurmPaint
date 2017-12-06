@@ -3,6 +3,7 @@ package com.example.caden.drawingtest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -14,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.flask.colorpicker.ColorPickerView;
@@ -42,6 +45,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -57,6 +61,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     int currBatchSize;
     int currImgNo;
     Map uploadsDict;
+    boolean alreadyDrawn;
 
     // views
     private DrawModel drawModel;
@@ -85,6 +90,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     ConstraintSet constraintSet = new ConstraintSet();
 
     private static final int PIXEL_WIDTH = 280;
+    private static final int PIXEL_HEIGHT = 280;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -111,7 +117,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         fireBaseRetrieveImage();
 
         //get the model object
-        drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_WIDTH);
+        drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_HEIGHT);
         btnBrushColor = findViewById(R.id.btn_brush_color);
 //        brushColor = btnBrushColor.getBackgroundTintList();
         clDrawMain = findViewById(R.id.cl_draw_main);
@@ -128,6 +134,15 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         drawView.setModel(drawModel);
         // give it a touch listener to activate when the user taps
         drawView.setOnTouchListener(this);
+
+        /* Readjust the height to be almost the same as screen width */
+        int scrWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+        int scrHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+        Log.d("ratio", scrHeight/(float)scrWidth + "");
+        drawView.getLayoutParams().height =
+                (int)(Resources.getSystem().getDisplayMetrics().widthPixels * 0.85);
+        drawView.requestLayout();
+        alreadyDrawn = false;
     }
 
     @Override
@@ -149,10 +164,30 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     }
 
     private void about_screen() {
+
+        View aboutDialogView =
+                getLayoutInflater().inflate(R.layout.about_dialog,
+                        new ConstraintLayout(this), false);
+
+        TextView feedbackText = aboutDialogView.findViewById(R.id.tv_feedback);
+        RatingBar ratingBar = aboutDialogView.findViewById(R.id.ratingBar);
+
+        String userUID = mAuth.getCurrentUser().getUid();
+        String userEmail = mAuth.getCurrentUser().getEmail();
+
         new AlertDialog.Builder(this)
+                .setView(aboutDialogView)
                 .setMessage(R.string.about_text)
                 .setTitle(R.string.app_name)
-                .setPositiveButton("OK", (dialog, id) -> dialog.cancel())
+                .setPositiveButton("OK", (dialog, id) -> {
+                    mDatabase.child("ratings").child(userUID)
+                            .child("feedback").setValue(feedbackText.getText().toString());
+                    mDatabase.child("ratings").child(userUID)
+                            .child("rating").setValue(ratingBar.getRating());
+                    mDatabase.child("ratings").child(userUID)
+                            .child("email").setValue(userEmail);
+                    dialog.dismiss();
+                })
                 .show();
     }
 
@@ -204,17 +239,19 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     //draw line down
 
     private void processTouchDown(MotionEvent event) {
-        //calculate the x, y coordinates where the user has touched
-        mLastX = event.getX();
-        mLastY = event.getY();
-        //user them to calculate the position
-        drawView.calcPos(mLastX, mLastY, mTmpPoint);
-        //store them in memory to draw a line between the
-        //difference in positions
-        float lastConvX = mTmpPoint.x;
-        float lastConvY = mTmpPoint.y;
-        //and begin the line drawing
-        drawModel.startLine(lastConvX, lastConvY);
+        if (!alreadyDrawn) {
+            //calculate the x, y coordinates where the user has touched
+            mLastX = event.getX();
+            mLastY = event.getY();
+            //user them to calculate the position
+            drawView.calcPos(mLastX, mLastY, mTmpPoint);
+            //store them in memory to draw a line between the
+            //difference in positions
+            float lastConvX = mTmpPoint.x;
+            float lastConvY = mTmpPoint.y;
+            //and begin the line drawing
+            drawModel.startLine(lastConvX, lastConvY);
+        }
     }
 
     //the main drawing function
@@ -237,13 +274,17 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     }
 
     private void processTouchUp() {
-        drawModel.endLine();
+        if (!alreadyDrawn) {
+            drawModel.endLine();
+            alreadyDrawn = true;
+        }
     }
 
     public void clear(View v) {
         drawModel.clear();
         drawView.reset();
         drawView.invalidate();
+        alreadyDrawn = false;
     }
 
     public void sendImage(View v) {
@@ -264,11 +305,9 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         bmp.compress(Bitmap.CompressFormat.JPEG, 80, baos);
 
         UUID uuid = UUID.randomUUID();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EEE");
-        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-        DateFormat uploadFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EEE", Locale.US);
+        DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
         Date date = new Date();
-        String imageFileName = im.imgFileName;
         FirebaseUser u = mAuth.getCurrentUser();
 
         /* Upload Drawing */
@@ -299,9 +338,6 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                 .child(timeFormat.format(date)).child("user_email").setValue(u.getEmail());
         mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
                 .child(timeFormat.format(date)).child("user_uid").setValue(u.getUid());
-//        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("image_name").setValue(uuid.toString());
-//        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("user_email").setValue(u.getEmail());
-//        mDatabase.child(imageFileName).child(dateFormat.format(date)).child(timeFormat.format(date)).child("user_uid").setValue(u.getUid());
     }
 
     public void changeColor(View v) {
