@@ -17,4 +17,6 @@
     <string name="placeholder_email">user@wurmpaint.co</string>
     <string name="sign_out_text">Sign Out</string>
     <string name="next_random_text">Next Random</string>
+    <string name="mark_as_bad">Mark as bad</string>
+    <string name="reason_marking_image">Any reasons for marking this image?</string>
 </resources>

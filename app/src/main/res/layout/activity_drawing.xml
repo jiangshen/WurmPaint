@@ -97,16 +97,15 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_user_email">
 
         <Button
-            android:id="@+id/btn_brush_color"
+            android:id="@+id/btn_mark_bad"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="0dp"
             android:layout_height="52dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:drawableStart="@drawable/ic_color_lens"
-            android:drawableTint="#ffffff"
-            android:onClick="changeColor"
-            android:text="@string/color_text"
+            android:drawableStart="@drawable/ic_thumb_down"
+            android:text="@string/mark_as_bad"
+            android:onClick="markAsBad"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -126,7 +125,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_brush_color" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_mark_bad" />
 
         <android.support.v7.widget.CardView
             android:id="@+id/cv_controls"
@@ -135,6 +134,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginTop="6dp"
             android:padding="0dp"
+            android:visibility="gone"
             app:cardBackgroundColor="#607D8B"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -190,7 +190,6 @@
             android:layout_height="52dp"
             android:layout_marginEnd="4dp"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="6dp"
             android:backgroundTint="#009688"
             android:drawableStart="@drawable/ic_casino"
             android:onClick="nextImage"

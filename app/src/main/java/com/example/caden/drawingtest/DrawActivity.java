@@ -62,12 +62,7 @@ public class DrawActivity extends AppCompatActivity{
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mShakeDetector = new ShakeDetector();
-        mShakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
-            @Override
-            public void onShake(int count) {
-                handleShakeEvent(count);
-            }
-        });
+        mShakeDetector.setOnShakeListener(this::handleShakeEvent);
 
     }
 

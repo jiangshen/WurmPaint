@@ -2,7 +2,6 @@ package com.example.caden.drawingtest;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -26,8 +25,6 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.flask.colorpicker.ColorPickerView;
-import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -92,7 +89,6 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     private static final int PIXEL_WIDTH = 280;
     private static final int PIXEL_HEIGHT = 280;
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,7 +114,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
         //get the model object
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_HEIGHT);
-        btnBrushColor = findViewById(R.id.btn_brush_color);
+        btnBrushColor = findViewById(R.id.btn_mark_bad);
 //        brushColor = btnBrushColor.getBackgroundTintList();
         clDrawMain = findViewById(R.id.cl_draw_main);
         tvUserEmail = findViewById(R.id.tv_user_email);
@@ -138,7 +134,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         /* Readjust the height to be almost the same as screen width */
         int scrWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
         int scrHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-        Log.d("ratio", scrHeight/(float)scrWidth + "");
+//        Log.d("ratio", scrHeight/(float)scrWidth + "");
         drawView.getLayoutParams().height =
                 (int)(Resources.getSystem().getDisplayMetrics().widthPixels * 0.85);
         drawView.requestLayout();
@@ -301,8 +297,8 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         constraintSet.applyTo(clDrawMain);
 
         Bitmap bmp = drawView.getBitmapData();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+        ByteArrayOutputStream baOS = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 80, baOS);
 
         UUID uuid = UUID.randomUUID();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EEE", Locale.US);
@@ -317,7 +313,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         StorageMetadata metadata = new StorageMetadata.Builder()
                 .setCustomMetadata("text", "my first upload")
                 .build();
-        UploadTask upTask = mStorageRef.putBytes(baos.toByteArray(), metadata);
+        UploadTask upTask = mStorageRef.putBytes(baOS.toByteArray(), metadata);
         upTask.addOnSuccessListener(this, taskSnapshot -> {
             TransitionManager.beginDelayedTransition(clDrawMain);
             constraintSet.constrainWidth(R.id.pbar_send, 0);
@@ -340,22 +336,45 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                 .child(timeFormat.format(date)).child("user_uid").setValue(u.getUid());
     }
 
-    public void changeColor(View v) {
-        ColorPickerDialogBuilder
-                .with(this)
-                .setTitle("Pick Color")
-                .initialColor(Color.parseColor("#FFFFFF"))
-                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
-                .lightnessSliderOnly()
-                .density(16)
-                .setOnColorSelectedListener(selectedColor -> {})
-                .setPositiveButton("ok", (dialog, selectedColor, allColors) -> {
-                    btnBrushColor.setBackgroundTintList(ColorStateList.valueOf(selectedColor));
-                    brushColor = selectedColor;
-                    ImageManager.setBrushColor(selectedColor);
+//    public void changeColor(View v) {
+//        ColorPickerDialogBuilder
+//                .with(this)
+//                .setTitle("Pick Color")
+//                .initialColor(Color.parseColor("#FFFFFF"))
+//                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+//                .lightnessSliderOnly()
+//                .density(16)
+//                .setOnColorSelectedListener(selectedColor -> {})
+//                .setPositiveButton("ok", (dialog, selectedColor, allColors) -> {
+//                    btnBrushColor.setBackgroundTintList(ColorStateList.valueOf(selectedColor));
+//                    brushColor = selectedColor;
+//                    ImageManager.setBrushColor(selectedColor);
+//                })
+//                .setNegativeButton("cancel", (dialog, which) -> {})
+//                .build()
+//                .show();
+//    }
+
+    public void markAsBad(View v) {
+        /* Update Database Reference */
+        View aboutDialogView =
+                getLayoutInflater().inflate(R.layout.image_comments_dialog,
+                        new ConstraintLayout(this), false);
+
+        TextView reasonText = aboutDialogView.findViewById(R.id.tv_mark_reason);
+
+        String userUID = mAuth.getCurrentUser().getUid();
+
+        new AlertDialog.Builder(this)
+                .setView(aboutDialogView)
+                .setMessage(R.string.reason_marking_image)
+                .setTitle(R.string.app_name)
+                .setPositiveButton("OK", (dialog, id) -> {
+                    mDatabase.child("bad_images").child(currBatchName).child(String.valueOf(currImgNo))
+                            .child(userUID).setValue(reasonText.getText().toString());
+                    nextImage(v);
+                    dialog.dismiss();
                 })
-                .setNegativeButton("cancel", (dialog, which) -> {})
-                .build()
                 .show();
     }
 
@@ -380,20 +399,14 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         int keyLen = keys.size();
         String[] keyArray = (String[]) keys.toArray(new String[keyLen]);
         Random rand = new Random();
-//        TODO set is 0 based need to go from 0 to len - 1
+//        0 based need to go from 0 to len - 1
         int randKey = rand.nextInt(keyLen);
 
         currBatchName = keyArray[randKey];
-
-//        FIXME HARDCODED CHANGE, use currBATCHNAME INSTEAD
-//        currBatchName = "2017-09-23";
         currBatchSize = longToInt((Long) dict.get(currBatchName));
-
         currImgNo = rand.nextInt(currBatchSize) + 1;
-
         tvImageName.setText(String.format("%s / %d.png", currBatchName, currImgNo));
 
-//        FIXME load the image, check this code for errors!
         /* Load Drawing */
         String path = String.format("img/%s/%d.png", currBatchName, currImgNo);
         StorageReference mStorageRef = mStorage.getReference(path);
@@ -416,10 +429,10 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         currBatchName = keyArray[randKey];
         currBatchSize = longToInt((Long) uploadsDict.get(currBatchName));
         currImgNo = rand.nextInt(currBatchSize) + 1;
-        tvImageName.setText(String.format("%s / %d.png", currBatchName, currImgNo));
+        tvImageName.setText(String.format(Locale.US,"%s / %d.png", currBatchName, currImgNo));
 
         /* Load Drawing */
-        String path = String.format("img/%s/%d.png", currBatchName, currImgNo);
+        String path = String.format(Locale.US,"img/%s/%d.png", currBatchName, currImgNo);
         StorageReference mStorageRef = mStorage.getReference(path);
 
         final long ONE_KILOBYTE = 1024;
