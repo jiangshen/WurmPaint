@@ -109,7 +109,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         //get drawing view from XML (where the finger writes the number)
         drawView = findViewById(R.id.draw);
 
-//        TODO where i put this function is very important!! due to firebase async!!
+//        TODO where i put this function is very important!! due to FireBase async!!
         fireBaseRetrieveImage();
 
         //get the model object
@@ -411,8 +411,8 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         String path = String.format("img/%s/%d.png", currBatchName, currImgNo);
         StorageReference mStorageRef = mStorage.getReference(path);
 
-        final long ONE_KILOBYTE = 1024;
-        mStorageRef.getBytes(ONE_KILOBYTE).addOnSuccessListener(bytes -> {
+        final long FIVE_HUNDRED_KILOBYTE = 1024 * 100;
+        mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
             im.setImage(bytes);
             clear(findViewById(R.id.cl_draw_main));
         }).addOnFailureListener(exception -> {
@@ -435,8 +435,8 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         String path = String.format(Locale.US,"img/%s/%d.png", currBatchName, currImgNo);
         StorageReference mStorageRef = mStorage.getReference(path);
 
-        final long ONE_KILOBYTE = 1024;
-        mStorageRef.getBytes(ONE_KILOBYTE).addOnSuccessListener(bytes -> {
+        final long FIVE_HUNDRED_KILOBYTE = 1024 * 500;
+        mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
             im.setImage(bytes);
             clear(v);
         }).addOnFailureListener(exception -> {
