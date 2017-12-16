@@ -14,7 +14,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -60,7 +59,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     Map uploadsDict;
     boolean alreadyDrawn;
 
-    // views
+    /* Views */
     private DrawModel drawModel;
     private DrawView drawView;
     private PointF mTmpPoint = new PointF();
@@ -68,13 +67,10 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     private float mLastX;
     private float mLastY;
 
-    private ImageManager im;
-    int brushColor;
-    Button btnBrushColor;
+    Button btnMarkBad;
 
     /* FireBase */
     private FirebaseStorage mStorage;
-    private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
     Toolbar toolbar;
@@ -82,6 +78,10 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     FloatingActionButton fabSend;
     TextView tvUserEmail;
     TextView tvImageName;
+
+    String userUID;
+    String userEmail;
+    byte[] imgData;
 
     ConstraintLayout clDrawMain;
     ConstraintSet constraintSet = new ConstraintSet();
@@ -96,29 +96,26 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         toolbar = findViewById(R.id.drawing_toolbar);
         setSupportActionBar(toolbar);
 
-        im = new ImageManager();
         mStorage = FirebaseStorage.getInstance();
-        mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        brushColor = Color.parseColor("#FF2646");
-        ImageManager.setBrushColor(brushColor);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        userUID = user.getUid();
+        userEmail = user.getEmail();
 
-        FirebaseUser user = mAuth.getCurrentUser();
-
-        //get drawing view from XML (where the finger writes the number)
+        // get drawing view from XML (where the finger writes the number)
         drawView = findViewById(R.id.draw);
 
-//        TODO where i put this function is very important!! due to FireBase async!!
+        // TODO where i put this function is very important due to FireBase async!!
         fireBaseRetrieveImage();
 
         //get the model object
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_HEIGHT);
-        btnBrushColor = findViewById(R.id.btn_mark_bad);
-//        brushColor = btnBrushColor.getBackgroundTintList();
+        btnMarkBad = findViewById(R.id.btn_mark_bad);
+//        brushColor = btnMarkBad.getBackgroundTintList();
         clDrawMain = findViewById(R.id.cl_draw_main);
         tvUserEmail = findViewById(R.id.tv_user_email);
-        tvUserEmail.setText(user.getEmail());
+        tvUserEmail.setText(userEmail);
         tvImageName = findViewById(R.id.tv_img_name);
 
         constraintSet.clone(clDrawMain);
@@ -126,14 +123,14 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         fabSend = findViewById(R.id.fab_send);
         barSend = findViewById(R.id.pbar_send);
 
-        //init the view with the model object
+        // init the view with the model object
         drawView.setModel(drawModel);
         // give it a touch listener to activate when the user taps
         drawView.setOnTouchListener(this);
 
-        /* Readjust the height to be almost the same as screen width */
-        int scrWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-        int scrHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+        /* Re-adjust the height to be almost the same as screen width */
+//        int scrWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+//        int scrHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 //        Log.d("ratio", scrHeight/(float)scrWidth + "");
         drawView.getLayoutParams().height =
                 (int)(Resources.getSystem().getDisplayMetrics().widthPixels * 0.85);
@@ -160,16 +157,12 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     }
 
     private void about_screen() {
-
         View aboutDialogView =
                 getLayoutInflater().inflate(R.layout.about_dialog,
                         new ConstraintLayout(this), false);
 
         TextView feedbackText = aboutDialogView.findViewById(R.id.tv_feedback);
         RatingBar ratingBar = aboutDialogView.findViewById(R.id.ratingBar);
-
-        String userUID = mAuth.getCurrentUser().getUid();
-        String userEmail = mAuth.getCurrentUser().getEmail();
 
         new AlertDialog.Builder(this)
                 .setView(aboutDialogView)
@@ -188,16 +181,16 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     }
 
     @Override
-    //OnResume() is called when the user resumes his Activity which he left a while ago,
-    // //say he presses home button and then comes back to app, onResume() is called.
+    // OnResume() is called when the user resumes his Activity which he left a while ago,
+    // say he presses home button and then comes back to app, onResume() is called.
     protected void onResume() {
         drawView.onResume();
         super.onResume();
     }
 
     @Override
-    //OnPause() is called when the user receives an event like a call or a text message,
-    // //when onPause() is called the Activity may be partially or completely hidden.
+    // OnPause() is called when the user receives an event like a call or a text message,
+    // when onPause() is called the Activity may be partially or completely hidden.
     protected void onPause() {
         drawView.onPause();
         super.onPause();
@@ -205,9 +198,9 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    //this method detects which direction a user is moving
-    //their finger and draws a line accordingly in that
-    //direction
+    // this method detects which direction a user is moving
+    // their finger and draws a line accordingly in that
+    // direction
     public boolean onTouch(View v, MotionEvent event) {
         //get the action and store it as an int
         int action = event.getAction() & MotionEvent.ACTION_MASK;
@@ -232,8 +225,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         return false;
     }
 
-    //draw line down
-
+    // draw line down
     private void processTouchDown(MotionEvent event) {
         if (!alreadyDrawn) {
             //calculate the x, y coordinates where the user has touched
@@ -250,11 +242,14 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         }
     }
 
-    //the main drawing function
-    //it actually stores all the drawing positions
-    //into the drawModel object
-    //we actually render the drawing from that object
-    //in the drawRenderer class
+    /**
+     * The main drawing function
+     * it actually stores all the drawing positions
+     * into the drawModel object
+     * we actually render the drawing from that object
+     * in the drawRenderer class
+     * @param event motion event
+     */
     private void processTouchMove(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
@@ -304,7 +299,6 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EEE", Locale.US);
         DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
         Date date = new Date();
-        FirebaseUser u = mAuth.getCurrentUser();
 
         /* Upload Drawing */
         String path = "uploaded/" + currBatchName + "/" + currImgNo + "/" + uuid + ".jpg";
@@ -323,7 +317,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
             constraintSet.constrainHeight(R.id.cv_drawview, dvHeight);
             constraintSet.constrainHeight(R.id.drawing_ll, 0);
             constraintSet.applyTo(clDrawMain);
-//            Load the next one
+            /* Load the next drawing */
             nextImage(v);
         });
 
@@ -331,39 +325,17 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
             .child(timeFormat.format(date)).child("image_name").setValue(uuid.toString());
         mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
-                .child(timeFormat.format(date)).child("user_email").setValue(u.getEmail());
+                .child(timeFormat.format(date)).child("user_email").setValue(userEmail);
         mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
-                .child(timeFormat.format(date)).child("user_uid").setValue(u.getUid());
+                .child(timeFormat.format(date)).child("user_uid").setValue(userUID);
     }
-
-//    public void changeColor(View v) {
-//        ColorPickerDialogBuilder
-//                .with(this)
-//                .setTitle("Pick Color")
-//                .initialColor(Color.parseColor("#FFFFFF"))
-//                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
-//                .lightnessSliderOnly()
-//                .density(16)
-//                .setOnColorSelectedListener(selectedColor -> {})
-//                .setPositiveButton("ok", (dialog, selectedColor, allColors) -> {
-//                    btnBrushColor.setBackgroundTintList(ColorStateList.valueOf(selectedColor));
-//                    brushColor = selectedColor;
-//                    ImageManager.setBrushColor(selectedColor);
-//                })
-//                .setNegativeButton("cancel", (dialog, which) -> {})
-//                .build()
-//                .show();
-//    }
 
     public void markAsBad(View v) {
         /* Update Database Reference */
         View aboutDialogView =
                 getLayoutInflater().inflate(R.layout.image_comments_dialog,
                         new ConstraintLayout(this), false);
-
         TextView reasonText = aboutDialogView.findViewById(R.id.tv_mark_reason);
-
-        String userUID = mAuth.getCurrentUser().getUid();
 
         new AlertDialog.Builder(this)
                 .setView(aboutDialogView)
@@ -411,9 +383,9 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         String path = String.format("img/%s/%d.png", currBatchName, currImgNo);
         StorageReference mStorageRef = mStorage.getReference(path);
 
-        final long FIVE_HUNDRED_KILOBYTE = 1024 * 100;
+        final long FIVE_HUNDRED_KILOBYTE = 1024 * 500;
         mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
-            im.setImage(bytes);
+            ImageManager.setImage(bytes);
             clear(findViewById(R.id.cl_draw_main));
         }).addOnFailureListener(exception -> {
             // Handle any errors
@@ -437,7 +409,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
         final long FIVE_HUNDRED_KILOBYTE = 1024 * 500;
         mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
-            im.setImage(bytes);
+            ImageManager.setImage(bytes);
             clear(v);
         }).addOnFailureListener(exception -> {
             // Handle any errors

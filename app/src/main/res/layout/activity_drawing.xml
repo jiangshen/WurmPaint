@@ -78,7 +78,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginTop="16dp"
         android:fontFamily="monospace"
-        android:text="###/###.png"
+        android:text="@string/img_name_placeholder"
         android:textColor="@color/common_google_signin_btn_text_light_default"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -127,55 +127,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_mark_bad" />
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/cv_controls"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="6dp"
-            android:padding="0dp"
-            android:visibility="gone"
-            app:cardBackgroundColor="#607D8B"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <android.support.constraint.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:text="Size"
-                    android:textAllCaps="true"
-                    android:textColor="#ffffff"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <SeekBar
-                    android:id="@+id/seekBar3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/textView2"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </android.support.constraint.ConstraintLayout>
-
-        </android.support.v7.widget.CardView>
-
         <android.support.constraint.Guideline
             android:id="@+id/guideline"
             android:layout_width="wrap_content"
@@ -195,8 +146,7 @@
             android:onClick="nextImage"
             android:text="@string/next_random_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_clear"
-            app:layout_constraintTop_toBottomOf="@+id/cv_controls" />
+            app:layout_constraintStart_toEndOf="@+id/btn_clear" />
 
     </android.support.constraint.ConstraintLayout>
 
@@ -207,6 +157,7 @@
         android:layout_marginBottom="24dp"
         android:layout_marginEnd="24dp"
         android:clickable="true"
+        android:focusable="true"
         android:onClick="sendImage"
         android:src="@drawable/ic_send"
         android:visibility="visible"

@@ -3,10 +3,6 @@ package com.example.caden.drawingtest;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by caden on 10/31/17.
- */
-
 //a collection of getter and set functions
 //to draw a character model
 public class DrawModel {
@@ -48,7 +44,7 @@ public class DrawModel {
     private int mWidth;  // pixel width = 28
     private int mHeight; // pixel height = 28
 
-    //so a model consits of lines which consists of elements
+    //so a model consists of lines which consists of elements
     //a line begins when a user starts drawing and ends when
     //they lift their finger up
     private List<Line> mLines = new ArrayList<>();

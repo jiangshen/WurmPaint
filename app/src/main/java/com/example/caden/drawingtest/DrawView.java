@@ -14,10 +14,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-/**
- * Created by caden on 11/1/17.
- */
-
 public class DrawView extends View {
 
     private Paint mPaint = new Paint();
@@ -47,7 +43,7 @@ public class DrawView extends View {
     public void reset() {
         mDrawnLineSize = 0;
         if (mOffscreenBitmap != null) {
-//            used to be gray #E0E0E0
+            // used to be gray #E0E0E0
             mPaint.setColor(Color.parseColor("#000000"));
             int width = mOffscreenBitmap.getWidth();
             int height = mOffscreenBitmap.getHeight();
@@ -56,10 +52,15 @@ public class DrawView extends View {
         }
     }
 
+    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
+
     public void addBackground() {
 //      TODO Initialization there might be no image
         if (ImageManager.imgData != null) {
-            Log.d("DRAWVIEW", "IMAGE DATA IS NOT NULL");
+            Log.d("DrawView", "Image data is not null");
             Bitmap img = BitmapFactory.decodeByteArray(ImageManager.imgData, 0, ImageManager.imgData.length);
 //            use the width of the screen, and for height, scale it proportional to how much width was scaled
 //            (mOffscreenBitmap.getWidth() - img.getHeight()) / 2
@@ -76,11 +77,11 @@ public class DrawView extends View {
             paint.setFilterBitmap(true);
             mOffscreenCanvas.drawBitmap(img, null, dest, paint);
         } else {
-            Log.d("DRAWVIEW", "IMAGE DATA IS NULL");
+            Log.d("DrawView", "Image data is null");
         }
     }
 
-    //create the view, for a given length and width
+    // create the view, for a given length and width
     private void setup() {
         mHasBeenSetup = true;
 
@@ -112,8 +113,8 @@ public class DrawView extends View {
     }
 
     @Override
-    //when the user begins drawing, initialize
-    //the model renderer class and draw it on the canvas
+    // when the user begins drawing, initialize
+    // the model renderer class and draw it on the canvas
     public void onDraw(Canvas canvas) {
         if (mModel == null) {
             return;
@@ -139,7 +140,6 @@ public class DrawView extends View {
     /**
      * Convert screen position to local pos (pos in bitmap)
      */
-    //calculates the position of the finger
     public void calcPos(float x, float y, PointF out) {
         mTmpPoints[0] = x;
         mTmpPoints[1] = y;
@@ -174,31 +174,6 @@ public class DrawView extends View {
         }
         reset();
     }
-
-    /**
-     * Get 28x28 pixel data for input.
-     */
-//    public float[] getPixelData() {
-//        if (mOffscreenBitmap == null) {
-//            return null;
-//        }
-//
-//        int width = mOffscreenBitmap.getWidth();
-//        int height = mOffscreenBitmap.getHeight();
-//
-//        // Get 28x28 pixel data from bitmap
-//        int[] pixels = new int[width * height];
-//        mOffscreenBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-//
-//        float[] retPixels = new float[pixels.length];
-//        for (int i = 0; i < pixels.length; ++i) {
-//            // Set 0 for white and 255 for black pixel
-//            int pix = pixels[i];
-//            int b = pix & 0xff;
-//            retPixels[i] = (float)((0xff - b)/255.0);
-//        }
-//        return retPixels;
-//    }
 
     public Bitmap getBitmapData() {
         return this.mOffscreenBitmap;

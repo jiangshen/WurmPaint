@@ -4,10 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-/**
- * Created by caden on 10/31/17.
- */
-
 public class DrawRenderer {
 
     /**
@@ -28,7 +24,7 @@ public class DrawRenderer {
             //get the whole line from the model object
             DrawModel.Line line = model.getLine(i);
             //set its color
-            paint.setColor(ImageManager.brushColor);
+            paint.setColor(Color.parseColor("#FF2646"));
             //get the first of many lines that make up the overall line
             int elemSize = line.getElemSize();
             //if its empty, skip

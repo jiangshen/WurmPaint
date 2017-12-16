@@ -1,7 +1,5 @@
 package com.example.caden.drawingtest;
 
-import android.graphics.Color;
-
 /**
  * Created by caden on 10/13/17.
  */

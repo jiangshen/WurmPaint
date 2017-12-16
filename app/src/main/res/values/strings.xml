@@ -19,4 +19,5 @@
     <string name="next_random_text">Next Random</string>
     <string name="mark_as_bad">Mark as bad</string>
     <string name="reason_marking_image">Any reasons for marking this image?</string>
+    <string name="img_name_placeholder">###/###.png</string>
 </resources>
