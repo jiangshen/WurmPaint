@@ -9,6 +9,7 @@ Android drawing application for annotating the backbone of worms.
 ### 1.03 (2017-12-16)
 - Increased image retrieval size
 - Clean up and code optimization
+- App takes up to 70% less space on devices
 
 ### 1.02 (2017-12-08)
 - Added Firebase Crashlytics and Performance Monitoring
