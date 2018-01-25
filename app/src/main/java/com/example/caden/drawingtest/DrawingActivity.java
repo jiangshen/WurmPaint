@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -21,6 +20,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -336,16 +337,39 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                 getLayoutInflater().inflate(R.layout.image_comments_dialog,
                         new ConstraintLayout(this), false);
         TextView reasonText = aboutDialogView.findViewById(R.id.tv_mark_reason);
+        reasonText.setEnabled(false);
+        RadioGroup rG = aboutDialogView.findViewById(R.id.radioGroup);
+        RadioButton rbOther = aboutDialogView.findViewById(R.id.rb_other);
+        rG.setOnCheckedChangeListener(((radioGroup, i) -> {
+            if (i == rbOther.getId()) {
+                reasonText.setEnabled(true);
+            } else {
+                reasonText.setEnabled(false);
+            }
+        }));
 
         new AlertDialog.Builder(this)
                 .setView(aboutDialogView)
                 .setMessage(R.string.reason_marking_image)
                 .setTitle(R.string.app_name)
                 .setPositiveButton("OK", (dialog, id) -> {
+                    String textToSend = "";
+                    int selId = rG.getCheckedRadioButtonId();
+                    if (selId == rbOther.getId()) {
+                        if (reasonText.getText() != null) {
+                            textToSend = reasonText.getText().toString();
+;                       }
+                    } else {
+                        RadioButton selRB = aboutDialogView.findViewById(selId);
+                        textToSend = selRB.getText().toString();
+                    }
                     mDatabase.child("bad_images").child(currBatchName).child(String.valueOf(currImgNo))
-                            .child(userUID).setValue(reasonText.getText().toString());
+                            .child(userUID).setValue(textToSend);
                     nextImage(v);
                     dialog.dismiss();
+                })
+                .setNegativeButton("CANCEL", (dialog, id) -> {
+                    dialog.cancel();
                 })
                 .show();
     }

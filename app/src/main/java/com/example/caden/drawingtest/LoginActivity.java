@@ -30,6 +30,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     View root;
     EditText emailField;
     EditText passwordField;
+
     ProgressBar progressbar;
 
     FirebaseAuth mAuth;
@@ -147,18 +148,35 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void login(View v) {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
-        progressbar.setVisibility(View.VISIBLE);
-        mAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this, task -> {
-                progressbar.setVisibility(View.INVISIBLE);
-                if (task.isSuccessful()) {
-                    updateUI();
-                } else {
-                    Snackbar sb = Snackbar.make(v,
-                            String.format("\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 %s",
-                                    task.getException().getMessage()), Snackbar.LENGTH_LONG);
-                    sb.show();
-                }
-            });
+
+        /* Reset Errors */
+        emailField.setError(null);
+        passwordField.setError(null);
+
+        /* Null field check */
+        if (email.equals("") && password.equals("")) {
+            emailField.setError("Email cannot be empty");
+            passwordField.setError("Password cannot be empty");
+            emailField.requestFocus();
+        } else if (email.equals("")) {
+            emailField.setError("Email cannot be empty");
+            emailField.requestFocus();
+        } else if (password.equals("")) {
+            passwordField.requestFocus();
+            passwordField.setError("Password cannot be empty");
+        } else {
+            progressbar.setVisibility(View.VISIBLE);
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, task -> {
+                        progressbar.setVisibility(View.INVISIBLE);
+                        if (task.isSuccessful()) {
+                            updateUI();
+                        } else {
+                            emailField.setError(String.format("%s \uD83D\uDE05",
+                                    task.getException().getMessage()));
+                            emailField.requestFocus();
+                        }
+                    });
+        }
     }
 }

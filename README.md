@@ -6,6 +6,10 @@ Android drawing application for annotating the backbone of worms.
 
 ## Releases
 
+### 1.04 (2018-01-24)
+- Added quick options to marking bad images rather than just a general comment box
+- Resolved an issue where an empty email or password login would lead to a crash
+
 ### 1.03 (2017-12-16)
 - Increased image retrieval size
 - Clean up and code optimization

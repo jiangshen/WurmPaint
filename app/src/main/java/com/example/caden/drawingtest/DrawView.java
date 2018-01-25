@@ -11,7 +11,6 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 public class DrawView extends View {
@@ -58,10 +57,9 @@ public class DrawView extends View {
     }
 
     public void addBackground() {
-//      TODO Initialization there might be no image
         if (ImageManager.imgData != null) {
-            Log.d("DrawView", "Image data is not null");
-            Bitmap img = BitmapFactory.decodeByteArray(ImageManager.imgData, 0, ImageManager.imgData.length);
+            Bitmap img = BitmapFactory.decodeByteArray(ImageManager.imgData, 0,
+                    ImageManager.imgData.length);
 //            use the width of the screen, and for height, scale it proportional to how much width was scaled
 //            (mOffscreenBitmap.getWidth() - img.getHeight()) / 2
 
@@ -69,15 +67,12 @@ public class DrawView extends View {
 //            Log.d("offscreenbmp", mOffscreenBitmap.getWidth() + "..." + mOffscreenBitmap.getHeight());
 //            Log.d("drawview", this.getWidth() + "..." + this.getHeight());
 //            Log.d("calculated", 0 + "..." + 0 + "..." + mOffscreenBitmap.getWidth() + "..." + img.getHeight() * (mOffscreenBitmap.getWidth()/img.getWidth()));
-//            FIXME for now draw same dimensions as mOffscreenBitmap
-            Rect dest = new Rect(0, 0,
-                    mOffscreenBitmap.getWidth(),
+//           For now draw same dimensions as mOffscreenBitmap
+            Rect dest = new Rect(0, 0, mOffscreenBitmap.getWidth(),
                     mOffscreenBitmap.getHeight());
             Paint paint = new Paint();
             paint.setFilterBitmap(true);
             mOffscreenCanvas.drawBitmap(img, null, dest, paint);
-        } else {
-            Log.d("DrawView", "Image data is null");
         }
     }
 
@@ -97,9 +92,7 @@ public class DrawView extends View {
         float scaleH = height / modelHeight;
 
         float scale = scaleW;
-        if (scale > scaleH) {
-            scale = scaleH;
-        }
+        if (scale > scaleH) scale = scaleH;
 
         float newCx = modelWidth * scale / 2;
         float newCy = modelHeight * scale / 2;
@@ -161,7 +154,8 @@ public class DrawView extends View {
         if (mOffscreenBitmap != null) {
             mOffscreenBitmap.recycle();
         }
-        mOffscreenBitmap = Bitmap.createBitmap(mModel.getWidth(), mModel.getHeight(), Bitmap.Config.ARGB_8888);
+        mOffscreenBitmap = Bitmap.createBitmap(mModel.getWidth(), mModel.getHeight(),
+                Bitmap.Config.ARGB_8888);
         mOffscreenCanvas = new Canvas(mOffscreenBitmap);
         reset();
     }

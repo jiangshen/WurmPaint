@@ -3,7 +3,67 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:layout_editor_absoluteY="81dp">
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="136dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/rb_no_worm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="No Worm"
+            tools:layout_editor_absoluteX="24dp" />
+
+        <RadioButton
+            android:id="@+id/rb_worm_too_small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Worm Too Small"
+            tools:layout_editor_absoluteX="24dp"
+            tools:layout_editor_absoluteY="40dp" />
+
+        <RadioButton
+            android:id="@+id/rb_partial_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Partial Image"
+            tools:layout_editor_absoluteX="24dp"
+            tools:layout_editor_absoluteY="80dp" />
+
+        <RadioButton
+            android:id="@+id/rb_straight_edge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Straight Edge"
+            tools:layout_editor_absoluteX="24dp"
+            tools:layout_editor_absoluteY="120dp" />
+
+        <RadioButton
+            android:id="@+id/rb_corner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Corner"
+            tools:layout_editor_absoluteX="24dp"
+            tools:layout_editor_absoluteY="160dp" />
+
+        <RadioButton
+            android:id="@+id/rb_other"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Others"
+            tools:layout_editor_absoluteX="24dp"
+            tools:layout_editor_absoluteY="200dp" />
+
+    </RadioGroup>
 
     <MultiAutoCompleteTextView
         android:id="@+id/tv_mark_reason"
@@ -11,8 +71,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
 </android.support.constraint.ConstraintLayout>
