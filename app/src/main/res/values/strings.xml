@@ -20,4 +20,7 @@
     <string name="mark_as_bad">Mark as bad</string>
     <string name="reason_marking_image">Any reasons for marking this image?</string>
     <string name="img_name_placeholder">###/###.png</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

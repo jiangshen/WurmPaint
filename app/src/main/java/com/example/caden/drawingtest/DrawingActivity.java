@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -86,6 +89,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
     ConstraintLayout clDrawMain;
     ConstraintSet constraintSet = new ConstraintSet();
+    DrawerLayout drawer;
 
     private static final int PIXEL_WIDTH = 280;
     private static final int PIXEL_HEIGHT = 280;
@@ -94,8 +98,17 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawing);
+
+        /* Setting up toolbar */
         toolbar = findViewById(R.id.drawing_toolbar);
         setSupportActionBar(toolbar);
+
+        /* Setting up navigation drawer */
+        drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
         mStorage = FirebaseStorage.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -195,6 +208,18 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     protected void onPause() {
         drawView.onPause();
         super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            FirebaseAuth.getInstance().signOut();
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+            super.onBackPressed();
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
