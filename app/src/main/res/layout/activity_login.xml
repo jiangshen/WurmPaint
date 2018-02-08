@@ -73,12 +73,11 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <android.support.design.widget.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/text_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_person"
-                    android:drawableTint="#737373"
                     android:hint="@string/email_text"
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
@@ -92,6 +91,7 @@
                 android:layout_marginEnd="32dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="24dp"
+                app:passwordToggleEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -102,7 +102,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_lock"
-                    android:drawableTint="#737373"
                     android:hint="@string/password_text"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword"

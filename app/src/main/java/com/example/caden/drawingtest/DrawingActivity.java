@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,12 +17,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -80,7 +83,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     Toolbar toolbar;
     ProgressBar barSend;
     FloatingActionButton fabSend;
-    TextView tvUserEmail;
+    TextView navUserEmail;
     TextView tvImageName;
 
     String userUID;
@@ -90,6 +93,8 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     ConstraintLayout clDrawMain;
     ConstraintSet constraintSet = new ConstraintSet();
     DrawerLayout drawer;
+    NavigationView navView;
+    View navHeaderLayout;
 
     private static final int PIXEL_WIDTH = 280;
     private static final int PIXEL_HEIGHT = 280;
@@ -128,8 +133,10 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         btnMarkBad = findViewById(R.id.btn_mark_bad);
 //        brushColor = btnMarkBad.getBackgroundTintList();
         clDrawMain = findViewById(R.id.cl_draw_main);
-        tvUserEmail = findViewById(R.id.tv_user_email);
-        tvUserEmail.setText(userEmail);
+        navView = findViewById(R.id.nav_view);
+        navHeaderLayout = navView.getHeaderView(0);
+        navUserEmail = navHeaderLayout.findViewById(R.id.nav_drawer_email);
+        navUserEmail.setText(userEmail);
         tvImageName = findViewById(R.id.tv_img_name);
 
         constraintSet.clone(clDrawMain);
@@ -163,9 +170,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         if (item.getItemId() == R.id.menu_info) {
             about_screen();
         } else if (item.getItemId() == R.id.menu_sign_out) {
-            FirebaseAuth.getInstance().signOut();
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivity(i);
+            log_out();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -215,11 +220,23 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            FirebaseAuth.getInstance().signOut();
-            Intent i = new Intent(this, LoginActivity.class);
-            startActivity(i);
-            super.onBackPressed();
+            log_out();
         }
+    }
+
+    private void log_out() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.app_name)
+                .setMessage("Are you sure you want to log out?")
+                .setPositiveButton("YES", (dialog, id) -> {
+                    FirebaseAuth.getInstance().signOut();
+                    Intent i = new Intent(this, LoginActivity.class);
+                    startActivity(i);
+                })
+                .setNegativeButton("NO", (dialog, id) -> {
+                    dialog.cancel();
+                })
+                .show();
     }
 
     @SuppressLint("ClickableViewAccessibility")
