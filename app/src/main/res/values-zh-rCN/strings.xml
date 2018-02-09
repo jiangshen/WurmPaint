@@ -16,4 +16,5 @@
     <string name="reason_marking_image">Any reasons for marking this image?</string>
     <string name="img_name_placeholder">###/###.png</string>
     <string name="default_email_name">wurm.painter@gmail.com</string>
+    <string name="default_notification_channel_id">my_channel_01</string>
 </resources>
