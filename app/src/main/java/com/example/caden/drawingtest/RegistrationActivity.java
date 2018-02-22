@@ -71,20 +71,34 @@ public class RegistrationActivity extends AppCompatActivity {
         String email = txt_email.getText().toString();
         String password = txt_psw.getText().toString();
 
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        transition();
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Snackbar sd = Snackbar.make(v,
-                                String.format("\uD83D\uDE21\uD83D\uDE21\uD83D\uDE21 %s",
-                                        task.getException().getMessage()), Snackbar.LENGTH_LONG);
-                        sd.show();
-                    }
-                });
-
+        /* Email & Password Validation */
+        if (email.equals("")) {
+            txt_email.setError("Email cannot be empty");
+            txt_email.requestFocus();
+        } else if (password.equals("")) {
+            txt_psw.setError("Password cannot be empty");
+            txt_psw.requestFocus();
+        } else if (!Util.isPasswordValid(password)) {
+            txt_psw.setError("Password cannot be less than 8 characters");
+            txt_psw.requestFocus();
+        } else if (!Util.isEmailValid(email)) {
+            txt_email.setError("Email format is not valid");
+            txt_email.requestFocus();
+        } else {
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            transition();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Snackbar sd = Snackbar.make(v,
+                                    String.format("\uD83D\uDE21\uD83D\uDE21\uD83D\uDE21 %s",
+                                            task.getException().getMessage()), Snackbar.LENGTH_LONG);
+                            sd.show();
+                        }
+                    });
+        }
     }
 
     private void transition() {

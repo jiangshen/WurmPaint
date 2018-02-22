@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
 
-
+    <item android:title="Manage">
+        <!--<menu>-->
+            <!--<item android:id="nav_logout"-->
+            <!--android:icon="@drawable/ic_exit_to_app"-->
+            <!--android:title="Log out" />-->
+        <!--</menu>-->
+    </item>
 
 </menu>

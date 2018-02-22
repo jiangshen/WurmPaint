@@ -4,8 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
 import android.graphics.PointF;
+import android.graphics.Shader;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
@@ -24,13 +30,14 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,19 +45,24 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -80,6 +92,8 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     /* FireBase */
     private FirebaseStorage mStorage;
     private DatabaseReference mDatabase;
+    private FirebaseAnalytics mFirebaseAnalytics;
+    private FirebaseUser mUser;
 
     Toolbar toolbar;
     ProgressBar barSend;
@@ -89,7 +103,6 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
     String userUID;
     String userEmail;
-    byte[] imgData;
 
     ConstraintLayout clDrawMain;
     ConstraintSet constraintSet = new ConstraintSet();
@@ -105,8 +118,6 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawing);
 
-        Log.d("TAG", FirebaseInstanceId.getInstance().getToken());
-
         /* Setting up toolbar */
         toolbar = findViewById(R.id.drawing_toolbar);
         setSupportActionBar(toolbar);
@@ -118,29 +129,53 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mStorage = FirebaseStorage.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+        userUID = mUser.getUid();
+        userEmail = mUser.getEmail();
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        userUID = user.getUid();
-        userEmail = user.getEmail();
+//        FIXME
+        TextView tvUserEmail = findViewById(R.id.tv_user_email);
+        tvUserEmail.setText(mUser.isEmailVerified() ? "User is verified" : "User is not verified");
 
         // get drawing view from XML (where the finger writes the number)
         drawView = findViewById(R.id.draw);
 
-        // TODO where i put this function is very important due to FireBase async!!
+        /* Get Wurm image from FireBase */
         fireBaseRetrieveImage();
 
-        //get the model object
+        /* Get the Draw Model Object */
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_HEIGHT);
         btnMarkBad = findViewById(R.id.btn_mark_bad);
-//        brushColor = btnMarkBad.getBackgroundTintList();
         clDrawMain = findViewById(R.id.cl_draw_main);
         navView = findViewById(R.id.nav_view);
         navHeaderLayout = navView.getHeaderView(0);
         navUserEmail = navHeaderLayout.findViewById(R.id.nav_drawer_email);
         navUserEmail.setText(userEmail);
         tvImageName = findViewById(R.id.tv_img_name);
+
+        TextView navUserName = navHeaderLayout.findViewById(R.id.nav_drawer_name);
+        String userName = mUser.getDisplayName();
+        if (!(userName == null || userName.equals(""))) {
+            navUserName.setText(userName);
+        }
+
+//        FIXME get user profile photo
+        ImageView navUserImgView = navHeaderLayout.findViewById(R.id.nav_imgview);
+//        navUserImgView.setImageBitmap(getImageBitmap(mUser.getPhotoUrl().toString()));
+//
+//        Uri userPhotoUrl = mUser.getPhotoUrl();
+//        if (userPhotoUrl != null){
+//            try {
+//                Bitmap userBMP = MediaStore.Images.Media.
+//                        getBitmap(this.getContentResolver(), userPhotoUrl);
+//                navUserImgView.setImageBitmap(userBMP);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         constraintSet.clone(clDrawMain);
         dp56 = dpToPx(56);
@@ -350,6 +385,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         String path = "uploaded/" + currBatchName + "/" + currImgNo + "/" + uuid + ".jpg";
         StorageReference mStorageRef = mStorage.getReference(path);
 
+//        FIXME change setCustomMetadata or delete it?
         StorageMetadata metadata = new StorageMetadata.Builder()
                 .setCustomMetadata("text", "my first upload")
                 .build();

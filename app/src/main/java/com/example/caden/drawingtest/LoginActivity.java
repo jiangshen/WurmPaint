@@ -153,17 +153,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         emailField.setError(null);
         passwordField.setError(null);
 
-        /* Null field check */
-        if (email.equals("") && password.equals("")) {
-            emailField.setError("Email cannot be empty");
-            passwordField.setError("Password cannot be empty");
-            emailField.requestFocus();
-        } else if (email.equals("")) {
+        /* Email & Password Validation */
+        if (email.equals("")) {
             emailField.setError("Email cannot be empty");
             emailField.requestFocus();
         } else if (password.equals("")) {
-            passwordField.requestFocus();
             passwordField.setError("Password cannot be empty");
+            passwordField.requestFocus();
+        } else if (!Util.isPasswordValid(password)) {
+            passwordField.setError("Password cannot be less than 8 characters");
+            passwordField.requestFocus();
+        } else if (!Util.isEmailValid(email)) {
+            emailField.setError("Email format is not valid");
+            emailField.requestFocus();
         } else {
             progressbar.setVisibility(View.VISIBLE);
             mAuth.signInWithEmailAndPassword(email, password)

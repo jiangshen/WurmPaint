@@ -6,6 +6,14 @@ Android drawing application for annotating the backbone of worms.
 
 ## Releases
 
+### 1.05 (2018-02-22)
+- More robust email validation
+- Improved password fields
+- Added basic navigation drawer to access user profile
+- Google Sign-in now fully supported
+- Added push notification support
+- Firebase analytics
+
 ### 1.04 (2018-01-24)
 - Added quick options to marking bad images rather than just a general comment box
 - Resolved an issue where an empty email or password login would lead to a crash
