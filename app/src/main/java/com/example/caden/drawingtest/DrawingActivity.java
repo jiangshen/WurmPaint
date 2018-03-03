@@ -4,14 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
 import android.graphics.PointF;
-import android.graphics.Shader;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
@@ -24,7 +18,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,19 +44,13 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -272,9 +259,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                     Intent i = new Intent(this, LoginActivity.class);
                     startActivity(i);
                 })
-                .setNegativeButton("NO", (dialog, id) -> {
-                    dialog.cancel();
-                })
+                .setNegativeButton("NO", (dialog, id) -> dialog.cancel())
                 .show();
     }
 
@@ -397,10 +382,8 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
 
         /* Upload Drawing */
         String path = "uploaded/" + currBatchName + "/" + currImgNo + "_" + uuid + ".jpg";
-        Log.d("PATH", path);
         StorageReference mStorageRef = mStorage.getReference(path);
 
-//        FIXME change setCustomMetadata or delete it?
         StorageMetadata metadata = new StorageMetadata.Builder()
                 .setCustomMetadata("User Email", mUser.getEmail())
                 .setCustomMetadata("User UUID", mUser.getUid())
@@ -457,7 +440,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                     if (selId == rbOther.getId()) {
                         if (reasonText.getText() != null) {
                             textToSend = reasonText.getText().toString();
-;                       }
+                        }
                     } else {
                         RadioButton selRB = aboutDialogView.findViewById(selId);
                         textToSend = selRB.getText().toString();
@@ -467,9 +450,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                     nextImage(v);
                     dialog.dismiss();
                 })
-                .setNegativeButton("CANCEL", (dialog, id) -> {
-                    dialog.cancel();
-                })
+                .setNegativeButton("Cancel", (dialog, id) -> dialog.cancel())
                 .show();
     }
 
