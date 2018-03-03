@@ -16,7 +16,7 @@ public class DrawRenderer {
 
     public static void renderModel(Canvas canvas, DrawModel model, Paint paint, int startLineIndex) {
         //minimize distortion artifacts
-        paint.setAntiAlias(true);
+        paint.setAntiAlias(false);
         //get the size of the line to draw
         int lineSize = model.getLineSize();
         //given that size

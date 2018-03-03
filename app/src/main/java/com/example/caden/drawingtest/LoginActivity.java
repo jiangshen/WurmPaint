@@ -1,14 +1,18 @@
 package com.example.caden.drawingtest;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
@@ -47,6 +51,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         root = findViewById(R.id.cl_login);
         emailField = findViewById(R.id.text_email);
         passwordField = findViewById(R.id.text_password);
+        passwordField.setOnEditorActionListener(((textView, i, keyEvent) -> {
+            if (i == EditorInfo.IME_ACTION_DONE) {
+                login(root);
+            }
+            return true;
+        }));
         progressbar = findViewById(R.id.pbar);
         findViewById(R.id.sign_in_button).setOnClickListener(this);
 
@@ -167,18 +177,56 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             emailField.setError("Email format is not valid");
             emailField.requestFocus();
         } else {
+            /* Bring down the Keyboard */
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(root.getWindowToken(), 0);
+
             progressbar.setVisibility(View.VISIBLE);
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, task -> {
                         progressbar.setVisibility(View.INVISIBLE);
                         if (task.isSuccessful()) {
-                            updateUI();
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            if (user.isEmailVerified()) {
+                                updateUI();
+                            } else {
+                                new AlertDialog.Builder(this)
+                                        .setMessage("User is not verified, do you want to verify now?")
+                                        .setTitle(R.string.app_name)
+                                        .setPositiveButton("Yes", (dialog, id) -> {
+                                            sendVerificationEmail(user);
+                                        })
+                                        .setNegativeButton("No", (dialog, id) -> {
+                                            FirebaseAuth.getInstance().signOut();
+                                            emailField.requestFocus();
+                                        })
+                                        .show();
+                            }
+
                         } else {
-                            emailField.setError(String.format("%s \uD83D\uDE05",
-                                    task.getException().getMessage()));
+                            Snackbar.make(v, "Forgot your password?", Snackbar.LENGTH_LONG)
+                                    .setAction("Reset", view -> {
+
+                                    })
+                                    .show();
+//                            emailField.setError(String.format("%s \uD83D\uDE05",
+//                                    task.getException().getMessage()));
                             emailField.requestFocus();
                         }
                     });
         }
+    }
+
+    private void sendVerificationEmail(FirebaseUser user) {
+        user.sendEmailVerification().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Snackbar.make(root, "Email sent!", Snackbar.LENGTH_SHORT).show();
+            } else {
+                Snackbar.make(root, "Failed to send email, please try again",
+                        Snackbar.LENGTH_LONG).show();
+
+            }
+        });
+        FirebaseAuth.getInstance().signOut();
     }
 }

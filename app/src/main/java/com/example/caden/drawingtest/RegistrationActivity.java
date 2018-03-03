@@ -1,5 +1,6 @@
 package com.example.caden.drawingtest;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -9,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +36,12 @@ public class RegistrationActivity extends AppCompatActivity {
 
         txt_email = findViewById(R.id.text_new_email);
         txt_psw = findViewById(R.id.text_psw);
+        txt_psw.setOnEditorActionListener(((textView, i, keyEvent) -> {
+            if (i == EditorInfo.IME_ACTION_DONE) {
+                registerUser(findViewById(R.id.cl_register_main));
+            }
+            return true;
+        }));
         txt_psw_cfm = findViewById(R.id.text_psw_confirmation);
 
         mAuth = FirebaseAuth.getInstance();
@@ -85,13 +94,15 @@ public class RegistrationActivity extends AppCompatActivity {
             txt_email.setError("Email format is not valid");
             txt_email.requestFocus();
         } else {
+            /* Bring down the Keyboard */
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
                             transition();
                         } else {
-                            // If sign in fails, display a message to the user.
                             Snackbar sd = Snackbar.make(v,
                                     String.format("\uD83D\uDE21\uD83D\uDE21\uD83D\uDE21 %s",
                                             task.getException().getMessage()), Snackbar.LENGTH_LONG);

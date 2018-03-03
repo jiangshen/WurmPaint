@@ -16,6 +16,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -349,6 +350,11 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         if (!alreadyDrawn) {
             drawModel.endLine();
             alreadyDrawn = true;
+        } else {
+            Snackbar.make(drawer, "Please clear the screen before drawing again", Snackbar.LENGTH_SHORT)
+                    .setAction("Dismiss", view -> {
+                    })
+                    .show();
         }
     }
 
@@ -360,6 +366,14 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     }
 
     public void sendImage(View v) {
+
+        if (!alreadyDrawn) {
+            Snackbar.make(drawer, "Draw something before sending", Snackbar.LENGTH_SHORT)
+                    .setAction("Dismiss", view -> {
+                    })
+                    .show();
+            return;
+        }
 
         int dvHeight = findViewById(R.id.cv_drawview).getHeight();
 
@@ -382,12 +396,16 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         Date date = new Date();
 
         /* Upload Drawing */
-        String path = "uploaded/" + currBatchName + "/" + currImgNo + "/" + uuid + ".jpg";
+        String path = "uploaded/" + currBatchName + "/" + currImgNo + "_" + uuid + ".jpg";
+        Log.d("PATH", path);
         StorageReference mStorageRef = mStorage.getReference(path);
 
 //        FIXME change setCustomMetadata or delete it?
         StorageMetadata metadata = new StorageMetadata.Builder()
-                .setCustomMetadata("text", "my first upload")
+                .setCustomMetadata("User Email", mUser.getEmail())
+                .setCustomMetadata("User UUID", mUser.getUid())
+                .setCustomMetadata("Batch Name", currBatchName)
+                .setCustomMetadata("Image Number", String.valueOf(currImgNo))
                 .build();
         UploadTask upTask = mStorageRef.putBytes(baOS.toByteArray(), metadata);
         upTask.addOnSuccessListener(this, taskSnapshot -> {
