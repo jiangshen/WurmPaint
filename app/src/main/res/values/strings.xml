@@ -25,4 +25,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="default_email_name">wurm.painter@gmail.com</string>
     <string name="default_notification_channel_id">my_channel_01</string>
+    <string name="reset_psw_text">Reset Password</string>
+    <string name="reenter_email_text">Re-enter your email</string>
+    <string name="reset_text">Reset</string>
 </resources>

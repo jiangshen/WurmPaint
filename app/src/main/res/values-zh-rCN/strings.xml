@@ -9,12 +9,17 @@
     <string name="confirm_password_text">再次输入密码</string>
     <string name="or_text">或</string>
     <string name="no_account_text">没账号？注册吧！</string>
-    <string name="placeholder_email">user@wurmpaint.co</string>
-    <string name="sign_out_text">Sign Out</string>
-    <string name="next_random_text">Next Random</string>
+    <string name="placeholder_email">用户@wurmpaint.co</string>
+    <string name="sign_out_text">注销</string>
+    <string name="next_random_text">随机下图</string>
     <string name="mark_as_bad">Mark as bad</string>
     <string name="reason_marking_image">Any reasons for marking this image?</string>
     <string name="img_name_placeholder">###/###.png</string>
     <string name="default_email_name">wurm.painter@gmail.com</string>
     <string name="default_notification_channel_id">my_channel_01</string>
+    <string name="reset_psw_text">重设密码</string>
+    <string name="reenter_email_text">重新输入您的电邮</string>
+    <string name="clear_text">清除</string>
+    <string name="color_text">颜色</string>
+    <string name="reset_text">Reset</string>
 </resources>

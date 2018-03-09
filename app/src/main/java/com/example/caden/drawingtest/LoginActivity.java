@@ -51,9 +51,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         emailField = findViewById(R.id.text_email);
         passwordField = findViewById(R.id.text_password);
         passwordField.setOnEditorActionListener(((textView, i, keyEvent) -> {
-            if (i == EditorInfo.IME_ACTION_DONE) {
-                login(root);
-            }
+            if (i == EditorInfo.IME_ACTION_DONE) login(root);
             return true;
         }));
         progressbar = findViewById(R.id.pbar);
@@ -178,7 +176,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } else {
             /* Bring down the Keyboard */
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(root.getWindowToken(), 0);
+            if (imm != null) imm.hideSoftInputFromWindow(root.getWindowToken(), 0);
 
             progressbar.setVisibility(View.VISIBLE);
             mAuth.signInWithEmailAndPassword(email, password)
@@ -205,7 +203,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         } else {
                             Snackbar.make(v, "Forgot your password?", Snackbar.LENGTH_LONG)
                                     .setAction("Reset", view -> {
-
+                                        goToPasswordReset(email);
                                     })
                                     .show();
 //                            emailField.setError(String.format("%s \uD83D\uDE05",
@@ -227,5 +225,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         });
         FirebaseAuth.getInstance().signOut();
+    }
+
+    private void goToPasswordReset(String userEmail) {
+        Intent i = new Intent(this, PasswordResetActivity.class);
+        i.putExtra("user-email", userEmail);
+        startActivity(i);
     }
 }

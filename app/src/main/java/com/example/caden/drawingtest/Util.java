@@ -30,5 +30,4 @@ class Util {
     static boolean isPasswordValid(String s) {
         return passwordPtr.matcher(s).matches();
     }
-
 }
