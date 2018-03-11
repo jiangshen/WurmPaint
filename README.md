@@ -7,7 +7,7 @@ Android drawing application for annotating the backbone of worms.
 ## Releases
 
 ### 1.06 (2018-03-09)
-- Checks whether anything have been drawn before the user submits
+- Checks whether anything has been drawn before the user submits
 - Disabled anti-aliasing
 - Notify user that they have already drawn if they try to draw again
 - Brings down keyboard after user attempts to login

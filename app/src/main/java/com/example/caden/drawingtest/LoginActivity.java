@@ -179,6 +179,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             if (imm != null) imm.hideSoftInputFromWindow(root.getWindowToken(), 0);
 
             progressbar.setVisibility(View.VISIBLE);
+            mAuth.useAppLanguage();
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, task -> {
                         progressbar.setVisibility(View.INVISIBLE);
