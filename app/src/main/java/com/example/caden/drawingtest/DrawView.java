@@ -57,9 +57,9 @@ public class DrawView extends View {
     }
 
     public void addBackground() {
-        if (ImageManager.imgData != null) {
-            Bitmap img = BitmapFactory.decodeByteArray(ImageManager.imgData, 0,
-                    ImageManager.imgData.length);
+        if (SharedData.imgData != null) {
+            Bitmap img = BitmapFactory.decodeByteArray(SharedData.imgData, 0,
+                    SharedData.imgData.length);
 //            use the width of the screen, and for height, scale it proportional to how much width was scaled
 //            (mOffscreenBitmap.getWidth() - img.getHeight()) / 2
 

@@ -16,9 +16,10 @@ public class DrawRenderer {
 
     public static void renderModel(Canvas canvas, DrawModel model, Paint paint, int startLineIndex) {
         //minimize distortion artifacts
-        paint.setAntiAlias(false);
+        paint.setAntiAlias(true);
         //get the size of the line to draw
         int lineSize = model.getLineSize();
+        if (lineSize == 1) SharedData.lineData = model.getLine(0).getAllLineElem();
         //given that size
         for (int i = startLineIndex; i < lineSize; ++i) {
             //get the whole line from the model object

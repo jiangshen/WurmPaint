@@ -2,9 +2,20 @@
 
 Android drawing application for annotating the backbone of worms.
 
-<img src="screens/scr_main.jpg" width="50%" height="50%" />
+<img src="screens/scr_1.jpg" width="30%" height="30%" />
+<img src="screens/scr_2.jpg" width="30%" height="30%" />
+<img src="screens/scr_3.jpg" width="30%" height="30%" />
 
 ## Releases
+
+### 1.07 (2018-04-14)
+- Added user scores in FireBase
+- More robust image loading from FireBase
+- Navigation menu support
+- Added Google Play Achievements
+- Added Google Play Leaderboard
+- Added line information (pixel accuracy) on FireBase database
+- Updated Play Services to v15.0.0
 
 ### 1.06 (2018-03-09)
 - Checks whether anything has been drawn before the user submits

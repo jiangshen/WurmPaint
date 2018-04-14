@@ -37,6 +37,10 @@ public class DrawModel {
         public LineElem getElem(int index) {
             return elems.get(index);
         }
+
+        public List<LineElem> getAllLineElem() {
+            return elems;
+        }
     }
 
     private Line mCurrentLine;

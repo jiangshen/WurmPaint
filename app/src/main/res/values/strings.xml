@@ -28,4 +28,7 @@
     <string name="reset_psw_text">Reset Password</string>
     <string name="reenter_email_text">Re-enter your email</string>
     <string name="reset_text">Reset</string>
+    <string name="app_id">52423362671</string>
+    <string name="achievement_newbie_id">CgkI75C0pcMBEAIQAQ</string>
+    <string name="leaderboard_wurm_scores_id">CgkI75C0pcMBEAIQAw</string>
 </resources>

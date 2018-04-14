@@ -2,13 +2,36 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
-
-    <item android:title="Manage">
-        <!--<menu>-->
-            <!--<item android:id="nav_logout"-->
-            <!--android:icon="@drawable/ic_exit_to_app"-->
-            <!--android:title="Log out" />-->
-        <!--</menu>-->
-    </item>
-
+    <group>
+        <item android:title="Player">
+            <menu>
+                <item android:id="@+id/nav_achievements"
+                    android:icon="@drawable/ic_stars"
+                    android:title="Achievements" />
+                <item android:id="@+id/nav_leaderboard"
+                    android:icon="@drawable/ic_people"
+                    android:title="Leaderboard" />
+            </menu>
+        </item>
+    </group>
+    <group>
+        <item android:title="Manage">
+            <menu>
+                <item android:id="@+id/nav_settings"
+                    android:icon="@drawable/ic_settings"
+                    android:title="Settings" />
+                <item android:id="@+id/nav_logout"
+                    android:icon="@drawable/ic_exit_to_app"
+                    android:title="Log out" />
+            </menu>
+        </item>
+    </group>
+    <group>
+        <item android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help"
+            android:title="Help" />
+        <item android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info"
+            android:title="About" />
+    </group>
 </menu>

@@ -1,11 +1,11 @@
 package com.example.caden.drawingtest;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
@@ -31,6 +31,11 @@ import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.games.AchievementsClient;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.LeaderboardsClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,10 +60,15 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-public class DrawingActivity extends AppCompatActivity implements View.OnTouchListener {
+public class DrawingActivity extends AppCompatActivity
+        implements View.OnTouchListener, NavigationView.OnNavigationItemSelectedListener {
 
     /* Constants */
     int dp56;
+    private static final int PIXEL_WIDTH = 280;
+    private static final int PIXEL_HEIGHT = 280;
+    private static final int RC_ACHIEVEMENT_UI = 9003;
+    private static final int RC_LEADERBOARD_UI = 9004;
 
     /* Variables */
     String currBatchName;
@@ -83,14 +93,21 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseUser mUser;
 
+    /* Play Games */
+    GoogleSignInAccount gAcct;
+    AchievementsClient mAchClient;
+    LeaderboardsClient mLeadClient;
+
     Toolbar toolbar;
     ProgressBar barSend;
     FloatingActionButton fabSend;
     TextView navUserEmail;
     TextView tvImageName;
+    TextView tvUserScore;
 
     String userUID;
     String userEmail;
+    int userScore;
 
     ConstraintLayout clDrawMain;
     ConstraintSet constraintSet = new ConstraintSet();
@@ -98,8 +115,6 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
     NavigationView navView;
     View navHeaderLayout;
 
-    private static final int PIXEL_WIDTH = 280;
-    private static final int PIXEL_HEIGHT = 280;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,21 +139,23 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         userUID = mUser.getUid();
         userEmail = mUser.getEmail();
 
-//        FIXME
-        TextView tvUserEmail = findViewById(R.id.tv_user_email);
-        tvUserEmail.setText(mUser.isEmailVerified() ? "User is verified" : "User is not verified");
-
         // get drawing view from XML (where the finger writes the number)
         drawView = findViewById(R.id.draw);
 
         /* Get Wurm image from FireBase */
         fireBaseRetrieveImage();
+        fireBaseRetrieveUserScore();
+
+        tvUserScore = findViewById(R.id.tv_user_score);
+        tvUserScore.setText(String.valueOf(userScore));
+
 
         /* Get the Draw Model Object */
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_HEIGHT);
         btnMarkBad = findViewById(R.id.btn_mark_bad);
         clDrawMain = findViewById(R.id.cl_draw_main);
         navView = findViewById(R.id.nav_view);
+        navView.setNavigationItemSelectedListener(this);
         navHeaderLayout = navView.getHeaderView(0);
         navUserEmail = navHeaderLayout.findViewById(R.id.nav_drawer_email);
         navUserEmail.setText(userEmail);
@@ -151,7 +168,7 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         }
 
 //        FIXME get user profile photo
-        ImageView navUserImgView = navHeaderLayout.findViewById(R.id.nav_imgview);
+//        ImageView navUserImgView = navHeaderLayout.findViewById(R.id.nav_imgview);
 //        navUserImgView.setImageBitmap(getImageBitmap(mUser.getPhotoUrl().toString()));
 //
 //        Uri userPhotoUrl = mUser.getPhotoUrl();
@@ -183,25 +200,62 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                 (int)(Resources.getSystem().getDisplayMetrics().widthPixels * 0.85);
         drawView.requestLayout();
         alreadyDrawn = false;
+
+        /* Google Play Game */
+        gAcct = GoogleSignIn.getLastSignedInAccount(this);
+        if (gAcct != null) {
+            Games.getGamesClient(this, gAcct).setViewForPopups(clDrawMain);
+            mAchClient = Games.getAchievementsClient(this, gAcct);
+            mLeadClient = Games.getLeaderboardsClient(this, gAcct);
+        }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.drawing_menu, menu);
+        getMenuInflater().inflate(R.menu.standard_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_info) {
-            about_screen();
-        } else if (item.getItemId() == R.id.menu_sign_out) {
-            log_out();
+            aboutScreen();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void about_screen() {
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.nav_achievements) {
+            showAchievements();
+        } else if (id == R.id.nav_leaderboard) {
+            showLeaderBoard();
+        } else if (id == R.id.nav_logout) {
+            logOut();
+        } else if (id == R.id.nav_about) {
+            aboutScreen();
+        }
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void showAchievements() {
+        if (gAcct != null) {
+            mAchClient.getAchievementsIntent()
+                    .addOnSuccessListener((intent -> startActivityForResult(intent, RC_ACHIEVEMENT_UI)));
+        }
+    }
+
+    private void showLeaderBoard() {
+        if (gAcct != null) {
+            mLeadClient.getLeaderboardIntent(getString(R.string.leaderboard_wurm_scores_id))
+                    .addOnSuccessListener((intent -> startActivityForResult(intent, RC_LEADERBOARD_UI)));
+        }
+    }
+
+    private void aboutScreen() {
         View aboutDialogView =
                 getLayoutInflater().inflate(R.layout.about_dialog,
                         new ConstraintLayout(this), false);
@@ -246,11 +300,11 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            log_out();
+            logOut();
         }
     }
 
-    private void log_out() {
+    private void logOut() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.app_name)
                 .setMessage("Are you sure you want to log out?")
@@ -263,7 +317,6 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                 .show();
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     // this method detects which direction a user is moving
     // their finger and draws a line accordingly in that
@@ -404,6 +457,17 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
             nextImage(v);
         });
 
+        /* Update User Score internally, with FireBase and with Google Play Games */
+        userScore++;
+        if (mAchClient != null) {
+            mAchClient.increment(getString(R.string.achievement_newbie_id), 1);
+
+        }
+
+        tvUserScore.setText(String.valueOf(userScore));
+        mDatabase.child("user_scores").child(mUser.getUid()).setValue(userScore);
+        mFirebaseAnalytics.setUserProperty("user_score", String.valueOf(userScore));
+
         /* Update Database Reference */
         mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
             .child(timeFormat.format(date)).child("image_name").setValue(uuid.toString());
@@ -411,6 +475,10 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
                 .child(timeFormat.format(date)).child("user_email").setValue(userEmail);
         mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
                 .child(timeFormat.format(date)).child("user_uid").setValue(userUID);
+
+        /* Upload Database Line Data */
+        mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
+                .child(timeFormat.format(date)).child("lines").setValue(SharedData.lineData);
     }
 
     public void markAsBad(View v) {
@@ -458,66 +526,98 @@ public class DrawingActivity extends AppCompatActivity implements View.OnTouchLi
         mDatabase.child("master_upload").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                initWithImage((HashMap)dataSnapshot.getValue());
+                initWithImage((HashMap) dataSnapshot.getValue());
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
 
-    @SuppressLint("DefaultLocale")
-    private void initWithImage(HashMap dict) {
-//        Update
-        uploadsDict = dict;
-        Set keys = dict.keySet();
-        int keyLen = keys.size();
-        String[] keyArray = (String[]) keys.toArray(new String[keyLen]);
-        Random rand = new Random();
-//        0 based need to go from 0 to len - 1
-        int randKey = rand.nextInt(keyLen);
+    private void fireBaseRetrieveUserScore() {
+        mDatabase.child("user_scores").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                readUserScore((HashMap)dataSnapshot.getValue());
+            }
 
-        currBatchName = keyArray[randKey];
-        currBatchSize = longToInt((Long) dict.get(currBatchName));
-        currImgNo = rand.nextInt(currBatchSize) + 1;
-        tvImageName.setText(String.format("%s / %d.png", currBatchName, currImgNo));
-
-        /* Load Drawing */
-        String path = String.format("img/%s/%d.png", currBatchName, currImgNo);
-        StorageReference mStorageRef = mStorage.getReference(path);
-
-        final long FIVE_HUNDRED_KILOBYTE = 1024 * 500;
-        mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
-            ImageManager.setImage(bytes);
-            clear(findViewById(R.id.cl_draw_main));
-        }).addOnFailureListener(exception -> {
-            // Handle any errors
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
         });
+
+    }
+
+    private void readUserScore(HashMap dict) {
+        userScore = 0;
+        if (dict == null) {
+            /* New user, populate FireBase with default score */
+            mDatabase.child("user_scores").child(mUser.getUid()).setValue(userScore);
+        } else {
+            if (dict.containsKey(mUser.getUid())) {
+                Long score = (Long)dict.get(mUser.getUid());
+                userScore = score.intValue();
+                mFirebaseAnalytics.setUserProperty("user_score", String.valueOf(userScore));
+                tvUserScore.setText(String.valueOf(userScore));
+            } else {
+                /* First time again */
+                mDatabase.child("user_scores").child(mUser.getUid()).setValue(userScore);
+            }
+        }
+    }
+
+    private void initWithImage(HashMap dict) {
+        if (dict != null) {
+            uploadsDict = dict;
+            Set keys = dict.keySet();
+            int keyLen = keys.size();
+            String[] keyArray = (String[]) keys.toArray(new String[keyLen]);
+            Random rand = new Random();
+            int randKey = rand.nextInt(keyLen);
+
+            currBatchName = keyArray[randKey];
+            currBatchSize = longToInt((Long) dict.get(currBatchName));
+            currImgNo = rand.nextInt(currBatchSize) + 1;
+            tvImageName.setText(String.format(Locale.getDefault(), "%s / %d.png", currBatchName, currImgNo));
+
+            /* Load Drawing */
+            String path = String.format(Locale.getDefault(), "img/%s/%d.png", currBatchName, currImgNo);
+            StorageReference mStorageRef = mStorage.getReference(path);
+
+            final long FIVE_HUNDRED_KILOBYTE = 1024 * 500;
+            mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
+                SharedData.imgData = bytes;
+                clear(findViewById(R.id.cl_draw_main));
+            }).addOnFailureListener(exception -> {
+            });
+        }
+
     }
 
     public void nextImage(View v) {
-        Set keys = uploadsDict.keySet();
-        int keyLen = keys.size();
-        String[] keyArray = (String[]) keys.toArray(new String[keyLen]);
-        Random rand = new Random();
-        int randKey = rand.nextInt(keyLen);
-        currBatchName = keyArray[randKey];
-        currBatchSize = longToInt((Long) uploadsDict.get(currBatchName));
-        currImgNo = rand.nextInt(currBatchSize) + 1;
-        tvImageName.setText(String.format(Locale.US,"%s / %d.png", currBatchName, currImgNo));
+        if (uploadsDict != null) {
+            Set keys = uploadsDict.keySet();
+            int keyLen = keys.size();
+            String[] keyArray = (String[]) keys.toArray(new String[keyLen]);
+            Random rand = new Random();
+            int randKey = rand.nextInt(keyLen);
+            currBatchName = keyArray[randKey];
+            currBatchSize = longToInt((Long) uploadsDict.get(currBatchName));
+            currImgNo = rand.nextInt(currBatchSize) + 1;
+            tvImageName.setText(String.format(Locale.getDefault(),"%s / %d.png", currBatchName, currImgNo));
 
-        /* Load Drawing */
-        String path = String.format(Locale.US,"img/%s/%d.png", currBatchName, currImgNo);
-        StorageReference mStorageRef = mStorage.getReference(path);
+            /* Load Drawing */
+            String path = String.format(Locale.getDefault(),"img/%s/%d.png", currBatchName, currImgNo);
+            StorageReference mStorageRef = mStorage.getReference(path);
 
-        final long FIVE_HUNDRED_KILOBYTE = 1024 * 500;
-        mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
-            ImageManager.setImage(bytes);
-            clear(v);
-        }).addOnFailureListener(exception -> {
-            // Handle any errors
-        });
+            final long FIVE_HUNDRED_KILOBYTE = 1024 * 500;
+            mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
+                SharedData.imgData = bytes;
+                clear(v);
+            }).addOnFailureListener(exception -> {
+            });
+        }
+
     }
 
     /**
