@@ -2,9 +2,9 @@
 
 Android drawing application for annotating the backbone of worms.
 
-<img src="screens/scr_1.jpg" width="30%" height="30%" />
-<img src="screens/scr_2.jpg" width="30%" height="30%" />
-<img src="screens/scr_3.jpg" width="30%" height="30%" />
+ Main Screen          | Navigation           | Achievements
+:--------------------:|:--------------------:|:--------------------:
+![](screens/scr_1.jpg)|![](screens/scr_2.jpg)|![](screens/scr_3.jpg)
 
 ## Releases
 
