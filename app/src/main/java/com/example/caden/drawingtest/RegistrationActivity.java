@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -25,14 +26,15 @@ public class RegistrationActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
 
     @Override
-    @SuppressWarnings("ConstantConditions")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
         Toolbar toolbar = findViewById(R.id.registration_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         txt_email = findViewById(R.id.text_new_email);
         txt_psw = findViewById(R.id.text_psw);
@@ -55,7 +57,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.standard_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_standard, menu);
         return true;
     }
 
@@ -75,7 +77,6 @@ public class RegistrationActivity extends AppCompatActivity {
             .show();
     }
 
-    @SuppressWarnings("ConstantConditions")
     public void registerUser(View v) {
         String email = txt_email.getText().toString();
         String password = txt_psw.getText().toString();
@@ -96,16 +97,19 @@ public class RegistrationActivity extends AppCompatActivity {
         } else {
             /* Bring down the Keyboard */
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            if (imm != null) imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             transition();
                         } else {
+                            String msg = task.getException() == null ?
+                                    "Something went wrong, please try again!" :
+                                    task.getException().getMessage();
                             Snackbar sd = Snackbar.make(v,
-                                    String.format("\uD83D\uDE21\uD83D\uDE21\uD83D\uDE21 %s",
-                                            task.getException().getMessage()), Snackbar.LENGTH_LONG);
+                                    String.format("\uD83D\uDE21\uD83D\uDE21\uD83D\uDE21 %s", msg),
+                                    Snackbar.LENGTH_LONG);
                             sd.show();
                         }
                     });

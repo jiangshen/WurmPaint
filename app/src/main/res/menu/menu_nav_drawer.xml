@@ -11,6 +11,9 @@
                 <item android:id="@+id/nav_leaderboard"
                     android:icon="@drawable/ic_people"
                     android:title="Leaderboard" />
+                <item android:id="@+id/nav_logout"
+                    android:icon="@drawable/ic_exit_to_app"
+                    android:title="Log out" />
             </menu>
         </item>
     </group>
@@ -20,18 +23,16 @@
                 <item android:id="@+id/nav_settings"
                     android:icon="@drawable/ic_settings"
                     android:title="Settings" />
-                <item android:id="@+id/nav_logout"
-                    android:icon="@drawable/ic_exit_to_app"
-                    android:title="Log out" />
+                <item android:id="@+id/nav_send_feedback"
+                    android:icon="@drawable/ic_feedback"
+                    android:title="Send Feedback" />
+                <item android:id="@+id/nav_help"
+                    android:icon="@drawable/ic_help"
+                    android:title="Help" />
+                <item android:id="@+id/nav_about"
+                    android:icon="@drawable/ic_info"
+                    android:title="About" />
             </menu>
         </item>
-    </group>
-    <group>
-        <item android:id="@+id/nav_help"
-            android:icon="@drawable/ic_help"
-            android:title="Help" />
-        <item android:id="@+id/nav_about"
-            android:icon="@drawable/ic_info"
-            android:title="About" />
     </group>
 </menu>

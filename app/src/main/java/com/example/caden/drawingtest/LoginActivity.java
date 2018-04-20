@@ -21,7 +21,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -81,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.standard_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_standard, menu);
         return true;
     }
 
@@ -137,7 +136,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void fireBaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -146,15 +144,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (task.isSuccessful()) {
                     updateUI();
                 } else {
+                    String msg = task.getException() == null ?
+                            "Something went wrong, please try again!" :
+                            task.getException().getMessage();
                     Snackbar sb = Snackbar.make(root,
-                            String.format("\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 %s",
-                                    task.getException().getMessage()), Snackbar.LENGTH_LONG);
+                            String.format("\uD83D\uDE05\uD83D\uDE05\uD83D\uDE05 %s", msg),
+                            Snackbar.LENGTH_LONG);
                     sb.show();
                 }
             });
     }
 
-    @SuppressWarnings("ConstantConditions")
     public void login(View v) {
         String email = emailField.getText().toString();
         String password = passwordField.getText().toString();
@@ -188,30 +188,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         progressbar.setVisibility(View.INVISIBLE);
                         if (task.isSuccessful()) {
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                            if (user.isEmailVerified()) {
-                                updateUI();
-                            } else {
-                                new AlertDialog.Builder(this)
-                                        .setMessage("User is not verified, do you want to verify now?")
-                                        .setTitle(R.string.app_name)
-                                        .setPositiveButton("Yes", (dialog, id) -> {
-                                            sendVerificationEmail(user);
-                                        })
-                                        .setNegativeButton("No", (dialog, id) -> {
-                                            FirebaseAuth.getInstance().signOut();
-                                            emailField.requestFocus();
-                                        })
-                                        .show();
+                            if (user != null) {
+                                if (user.isEmailVerified()) {
+                                    updateUI();
+                                } else {
+                                    new AlertDialog.Builder(this)
+                                            .setMessage("User is not verified, do you want to verify now?")
+                                            .setTitle(R.string.app_name)
+                                            .setPositiveButton("Yes", (dialog, id) -> sendVerificationEmail(user))
+                                            .setNegativeButton("No", (dialog, id) -> {
+                                                FirebaseAuth.getInstance().signOut();
+                                                emailField.requestFocus();
+                                            })
+                                            .show();
+                                }
                             }
-
                         } else {
                             Snackbar.make(v, "Forgot your password?", Snackbar.LENGTH_LONG)
-                                    .setAction("Reset", view -> {
-                                        goToPasswordReset(email);
-                                    })
+                                    .setAction("Reset", view -> goToPasswordReset(email))
                                     .show();
-//                            emailField.setError(String.format("%s \uD83D\uDE05",
-//                                    task.getException().getMessage()));
                             emailField.requestFocus();
                         }
                     });

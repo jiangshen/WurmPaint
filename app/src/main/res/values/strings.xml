@@ -31,4 +31,97 @@
     <string name="app_id">52423362671</string>
     <string name="achievement_newbie_id">CgkI75C0pcMBEAIQAQ</string>
     <string name="leaderboard_wurm_scores_id">CgkI75C0pcMBEAIQAw</string>
+    <string name="title_activity_settings">Wurm Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+    <string name="pref_psw_summary">••••••••</string>
+    <string name="default_user_name">Wurm Painter</string>
+    <string name="about_screen_text">
+        <![CDATA[
+            <h1>About</h1>
+                <p>Android drawing application for annotating the backbone of worms.</p>
+                <a href="https://github.com/jiangshen/WurmPaint">Project Source Code Repository</a>
+            <h1>Changelog</h1>
+                <h3>1.07 (2018-04-14)</h3>
+                    <span>
+                        - Added user scores in FireBase <br />
+                        - More robust image loading from FireBase <br />
+                        - Navigation menu support <br />
+                        - Added Google Play Achievements <br />
+                        - Added Google Play Leaderboard <br />
+                        - Added line information (pixel accuracy) on FireBase database <br />
+                        - Updated Play Services to v15.0.0 <br />
+                    </span>
+                <h3>1.06 (2018-03-09)</h3>
+                    <span>
+                        - Checks whether anything has been drawn before the user submits <br />
+                        - Disabled anti-aliasing <br />
+                        - Notify user that they have already drawn if they try to draw again <br />
+                        - Brings down keyboard after user attempts to login <br />
+                        - Added user verification <br />
+                        - Added user password reset <br />
+                    </span>
+                <h3>1.05 (2018-02-22)</h3>
+                    <span>
+                        - More robust email validation <br />
+                        - Improved password fields <br />
+                        - Added basic navigation drawer to access user profile <br />
+                        - Google Sign-in now fully supported <br />
+                        - Added push notification support <br />
+                        - FireBase analytics <br />
+                    </span>
+                <h3>1.04 (2018-01-24)</h3>
+                    <span>
+                        - Added quick options to marking bad images rather than just a general comment box <br />
+                        - Resolved an issue where an empty email or password login would lead to a crash <br />
+                    </span>
+                <h3>1.03 (2017-12-16)</h3>
+                    <span>
+                        - Increased image retrieval size <br />
+                        - Clean up and code optimization <br />
+                        - App takes up to 70% less space on devices <br />
+                    </span>
+                <h3>1.02 (2017-12-08)</h3>
+                    <span>
+                        - Added Firebase Crashlytics and Performance Monitoring <br />
+                        - Added feedback and rate app dialog <br />
+                        - Removed brush color functionality <br />
+                        - Images expanded to fill the screen <br />
+                        - User restricted to drawing single strokes <br />
+                        - User can mark images as bad and provide a reason <br />
+                        - Optimized for tablet displays <br />
+                    </span>
+                <h3>1.01 (2017-12-01)</h3>
+                    <span>
+                        - Lowered app requirements to be able to install on older Android devices (up to Lollipop) <br />
+                    </span>
+                <h3>1.0 (2017-11-19)</h3>
+                    <span>
+                        - Initial Release <br />
+                    </span>
+        ]]>
+    </string>
+
 </resources>

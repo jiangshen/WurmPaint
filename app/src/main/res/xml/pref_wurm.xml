@@ -1,0 +1,68 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Personal Information"
+        android:key="user_category">
+
+        <EditTextPreference
+            android:title="Username"
+            android:defaultValue="Wurm Painter"
+            android:inputType="textCapWords"
+            android:key="user_name"
+            android:maxLines="1"
+            android:selectAllOnFocus="true" />
+
+        <EditTextPreference
+            android:title="Email"
+            android:defaultValue="@string/placeholder_email"
+            android:inputType="textEmailAddress"
+            android:key="user_email"
+            android:maxLines="1"
+            android:selectAllOnFocus="true" />
+
+        <EditTextPreference
+            android:title="Password"
+            android:defaultValue="password"
+            android:inputType="textPassword"
+            android:summary="@string/pref_psw_summary"
+            android:maxLines="1"
+            android:key="user_password"
+            android:selectAllOnFocus="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Game Settings"
+        android:key="game_category">
+
+
+    </PreferenceCategory>
+
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="example_switch"
+        android:summary="@string/pref_description_social_recommendations"
+        android:title="@string/pref_title_social_recommendations" />
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+
+    <ListPreference
+        android:defaultValue="-1"
+        android:entries="@array/pref_example_list_titles"
+        android:entryValues="@array/pref_example_list_values"
+        android:key="example_list"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_add_friends_to_messages" />
+
+    <Preference android:title="@string/pref_title_system_sync_settings">
+        <intent android:action="android.settings.SYNC_SETTINGS" />
+    </Preference>
+
+</PreferenceScreen>

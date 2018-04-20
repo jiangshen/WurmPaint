@@ -31,7 +31,7 @@ Android drawing application for annotating the backbone of worms.
 - Added basic navigation drawer to access user profile
 - Google Sign-in now fully supported
 - Added push notification support
-- Firebase analytics
+- FireBase analytics
 
 ### 1.04 (2018-01-24)
 - Added quick options to marking bad images rather than just a general comment box

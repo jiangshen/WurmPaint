@@ -24,7 +24,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -204,25 +203,10 @@ public class DrawingActivity extends AppCompatActivity
         /* Google Play Game */
         gAcct = GoogleSignIn.getLastSignedInAccount(this);
         if (gAcct != null) {
-            Games.getGamesClient(this, gAcct).setViewForPopups(clDrawMain);
+//            Games.getGamesClient(this, gAcct).setViewForPopups(clDrawMain);
             mAchClient = Games.getAchievementsClient(this, gAcct);
             mLeadClient = Games.getLeaderboardsClient(this, gAcct);
         }
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.standard_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_info) {
-            aboutScreen();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -234,8 +218,12 @@ public class DrawingActivity extends AppCompatActivity
             showLeaderBoard();
         } else if (id == R.id.nav_logout) {
             logOut();
+        } else if (id == R.id.nav_settings) {
+            showSettings();
+        } else if (id == R.id.nav_send_feedback) {
+            feedbackScreen();
         } else if (id == R.id.nav_about) {
-            aboutScreen();
+            showAbout();
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -255,9 +243,14 @@ public class DrawingActivity extends AppCompatActivity
         }
     }
 
-    private void aboutScreen() {
+    private void showSettings() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    private void feedbackScreen() {
         View aboutDialogView =
-                getLayoutInflater().inflate(R.layout.about_dialog,
+                getLayoutInflater().inflate(R.layout.dialog_feedback,
                         new ConstraintLayout(this), false);
 
         TextView feedbackText = aboutDialogView.findViewById(R.id.tv_feedback);
@@ -317,27 +310,20 @@ public class DrawingActivity extends AppCompatActivity
                 .show();
     }
 
-    @Override
-    // this method detects which direction a user is moving
-    // their finger and draws a line accordingly in that
-    // direction
-    public boolean onTouch(View v, MotionEvent event) {
-        //get the action and store it as an int
-        int action = event.getAction() & MotionEvent.ACTION_MASK;
-        //actions have predefined ints, lets match
-        //to detect, if the user has touched, which direction the users finger is
-        //moving, and if they've stopped moving
+    private void showAbout() {
+        Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
+    }
 
-        //if touched
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        int action = event.getAction() & MotionEvent.ACTION_MASK;
         if (action == MotionEvent.ACTION_DOWN) {
-            //begin drawing line
             processTouchDown(event);
             return true;
-            //draw line in every direction the user moves
         } else if (action == MotionEvent.ACTION_MOVE) {
             processTouchMove(event);
             return true;
-            //if finger is lifted, stop drawing
         } else if (action == MotionEvent.ACTION_UP) {
             processTouchUp();
             return true;
@@ -345,19 +331,13 @@ public class DrawingActivity extends AppCompatActivity
         return false;
     }
 
-    // draw line down
     private void processTouchDown(MotionEvent event) {
         if (!alreadyDrawn) {
-            //calculate the x, y coordinates where the user has touched
             mLastX = event.getX();
             mLastY = event.getY();
-            //user them to calculate the position
             drawView.calcPos(mLastX, mLastY, mTmpPoint);
-            //store them in memory to draw a line between the
-            //difference in positions
             float lastConvX = mTmpPoint.x;
             float lastConvY = mTmpPoint.y;
-            //and begin the line drawing
             drawModel.startLine(lastConvX, lastConvY);
         }
     }
@@ -484,7 +464,7 @@ public class DrawingActivity extends AppCompatActivity
     public void markAsBad(View v) {
         /* Update Database Reference */
         View aboutDialogView =
-                getLayoutInflater().inflate(R.layout.image_comments_dialog,
+                getLayoutInflater().inflate(R.layout.dialog_img_comments,
                         new ConstraintLayout(this), false);
         TextView reasonText = aboutDialogView.findViewById(R.id.tv_mark_reason);
         reasonText.setEnabled(false);
