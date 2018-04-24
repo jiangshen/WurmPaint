@@ -60,4 +60,7 @@ freeline.py
 freeline/
 freeline_project_description.json
 .DS_Store
+app/src/main/*.xml
+app/src/main/res/values/*.xml
+app/src/main/AndroidManifest.xml
 app/src/main/AndroidManifest.xml

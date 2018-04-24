@@ -23,7 +23,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="Game Settings"
+        android:title="Application Settings"
         android:key="game_category">
 
         <SwitchPreference

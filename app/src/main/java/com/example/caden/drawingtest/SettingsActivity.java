@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -12,6 +13,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -22,12 +24,14 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
     private static FirebaseUser user;
     private static String userName;
+    private static SharedPreferences sharedPrefs;
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -99,10 +103,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 new WurmPrefFragment()).commit();
         setupActionBar();
 
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putString("user_name", user.getDisplayName());
         editor.putString("user_email", user.getEmail());
-
         editor.apply();
     }
 
@@ -141,22 +146,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 
     public static class WurmPrefFragment extends PreferenceFragment {
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_wurm);
             setHasOptionsMenu(true);
-
             for (UserInfo u : user.getProviderData()) {
                 if (u.getProviderId().equals("google.com")) {
                     findPreference("user_email").setEnabled(false);
                 }
             }
-
             bindPreferenceSummaryToValue(findPreference("user_name"));
             bindPreferenceSummaryToValue(findPreference("user_email"));
-
-//            bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 
         @Override

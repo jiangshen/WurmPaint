@@ -18,7 +18,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,8 +35,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.AchievementsClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.LeaderboardsClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -74,6 +71,7 @@ public class DrawingActivity extends AppCompatActivity
     private static final int RC_ACHIEVEMENT_UI = 9003;
     private static final int RC_LEADERBOARD_UI = 9004;
     private static final int RC_SETTING_UI = 9005;
+    private static final int RC_LEADERBOARD_SCORE = 1337;
 
     /* Variables */
     String currBatchName;
@@ -159,6 +157,7 @@ public class DrawingActivity extends AppCompatActivity
         /* Get Wurm image from FireBase */
         fireBaseRetrieveImage();
         fireBaseRetrieveUserScore();
+        updateLeaderBoard();
 
         tvUserScore = findViewById(R.id.tv_user_score);
         tvUserScore.setText(String.valueOf(userScore));
@@ -311,6 +310,8 @@ public class DrawingActivity extends AppCompatActivity
     // say he presses home button and then comes back to app, onResume() is called.
     protected void onResume() {
         drawView.onResume();
+        updateLeaderBoard();
+
         if (GoogleSignIn.getLastSignedInAccount(this) == null) {
             FirebaseAuth.getInstance().signOut();
             Intent i = new Intent(this, LoginActivity.class);
@@ -331,6 +332,12 @@ public class DrawingActivity extends AppCompatActivity
     protected void onPause() {
         drawView.onPause();
         super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        updateLeaderBoard();
+        super.onStop();
     }
 
     @Override
@@ -484,10 +491,7 @@ public class DrawingActivity extends AppCompatActivity
 
         /* Update User Score internally, with FireBase and with Google Play Games */
         userScore++;
-        if (mAchClient != null) {
-            mAchClient.increment(getString(R.string.achievement_newbie_id), 1);
-
-        }
+        updateWurmsAchievements();
 
         tvUserScore.setText(String.valueOf(userScore));
         mDatabase.child("user_scores").child(mUser.getUid()).setValue(userScore);
@@ -540,11 +544,42 @@ public class DrawingActivity extends AppCompatActivity
                     }
                     mDatabase.child("bad_images").child(currBatchName).child(String.valueOf(currImgNo))
                             .child(userUID).setValue(textToSend);
+                    updateReporterAchievements();
                     nextImage(v);
                     dialog.dismiss();
                 })
                 .setNegativeButton("Cancel", (dialog, id) -> dialog.cancel())
                 .show();
+    }
+
+    private void updateWurmsAchievements() {
+        if (isGoogleSignIn) {
+            mAchClient.increment(getString(R.string.achievement_newbie_1_id), 1);
+            mAchClient.increment(getString(R.string.achievement_newbie_2_id), 1);
+            mAchClient.increment(getString(R.string.achievement_growing_1_id), 1);
+            mAchClient.increment(getString(R.string.achievement_growing_2_id), 1);
+            mAchClient.increment(getString(R.string.achievement_silver_id), 1);
+            mAchClient.increment(getString(R.string.achievement_gold_id), 1);
+            mAchClient.increment(getString(R.string.achievement_diamond_id), 1);
+            mAchClient.increment(getString(R.string.achievement_platinum_id), 1);
+            mAchClient.increment(getString(R.string.achievement_master_of_all_id), 1);
+        }
+    }
+
+    private void updateReporterAchievements() {
+        if (isGoogleSignIn) {
+            mAchClient.increment(getString(R.string.achievement_reporter_1_id), 1);
+            mAchClient.increment(getString(R.string.achievement_reporter_2_id), 1);
+            mAchClient.increment(getString(R.string.achievement_exp_reporter_id), 1);
+            mAchClient.increment(getString(R.string.achievement_pro_reporter_id), 1);
+        }
+    }
+
+    private void updateLeaderBoard() {
+        if (isGoogleSignIn && userScore > 0) {
+            mLeadClient.submitScore(getString(R.string.leaderboard_wurm_scores_id), RC_LEADERBOARD_SCORE);
+        }
+
     }
 
     private void fireBaseRetrieveImage() {

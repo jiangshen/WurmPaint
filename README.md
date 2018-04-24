@@ -51,7 +51,7 @@ Android drawing application for annotating the backbone of worms.
 - App takes up to 70% less space on devices
 
 ### 1.02 (2017-12-08)
-- Added Firebase Crashlytics and Performance Monitoring
+- Added FireBase Crashlytics and Performance Monitoring
 - Added feedback and rate app dialog
 - Removed brush color functionality
 - Images expanded to fill the screen

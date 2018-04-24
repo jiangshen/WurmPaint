@@ -76,7 +76,8 @@
             android:screenOrientation="portrait"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".DrawingActivity"
-            android:theme="@style/AppTheme.Settings">
+            android:theme="@style/AppTheme.Settings"
+            android:configChanges="locale">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.caden.drawingtest.DrawingActivity" />
