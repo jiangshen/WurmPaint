@@ -20,8 +20,16 @@ public class AboutActivity extends AppCompatActivity {
         }
 
         TextView tvChangeLog = findViewById(R.id.tv_change_log);
-        tvChangeLog.setText(Html.fromHtml(getString(R.string.about_screen_text)));
+        tvChangeLog.setText(Html.fromHtml(getString(R.string.change_log_text)));
         tvChangeLog.setMovementMethod(LinkMovementMethod.getInstance());
+
+        TextView tvAboutApp = findViewById(R.id.tv_about_app);
+        tvAboutApp.setText(Html.fromHtml(getString(R.string.about_app_text)));
+        tvAboutApp.setMovementMethod(LinkMovementMethod.getInstance());
+
+        TextView tvPrivacyPolicy = findViewById(R.id.tv_privacy_policy);
+        tvPrivacyPolicy.setText(Html.fromHtml(getString(R.string.privacy_policy_text)));
+        tvPrivacyPolicy.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override

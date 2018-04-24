@@ -22,8 +22,7 @@
     <string name="clear_text">清除</string>
     <string name="color_text">颜色</string>
     <string name="reset_text">Reset</string>
-    <string name="app_id">52423362671</string>
-    <string name="pref_psw_summary">••••••••</string>
-    <string name="default_user_name">Wurm Painter</string>
-    <string name="about_screen_text">v1.07 (2018-04-14) - Added user scores in FireBase - More robust image loading from FireBase - Navigation menu support - Added Google Play Achievements - Added Google Play Leaderboard - Added line information (pixel accuracy) on FireBase database - Updated Play Services to v15.0.0 v1.06 (2018-03-09) - Checks whether anything has been drawn before the user submits - Disabled anti-aliasing - Notify user that they have already drawn if they try to draw again - Brings down keyboard after user attempts to login - Added user verification - Added user password reset v1.05 (2018-02-22) - More robust email validation - Improved password fields - Added basic navigation drawer to access user profile - Google Sign-in now fully supported - Added push notification support - Firebase analytics v1.04 (2018-01-24) - Added quick options to marking bad images rather than just a general comment box - Resolved an issue where an empty email or password login would lead to a crash v1.03 (2017-12-16) - Increased image retrieval size - Clean up and code optimization - App takes up to 70% less space on devices v1.02 (2017-12-08) - Added Firebase Crashlytics and Performance Monitoring - Added feedback and rate app dialog - Removed brush color functionality - Images expanded to fill the screen - User restricted to drawing single strokes - User can mark images as bad and provide a reason - Optimized for tablet displays v1.01 (2017-12-01) - Lowered app requirements to be able to install on older Android devices (up to Lollipop) v1.0 (2017-11-19) - Initial Release</string>
+    <string name="default_user_name">虫涂涂 用户</string>
+    <string name="title_activity_settings">虫涂涂 设置</string>
+    <string name="title_activity_about">关于 虫涂涂</string>
 </resources>

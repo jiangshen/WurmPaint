@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            updateUI();
+            updateUI(false);
         }
     }
 
@@ -105,9 +105,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         startActivity(i);
     }
 
-    public void updateUI() {
-        Intent i = new Intent(this, DrawingActivity.class);
-        startActivity(i);
+    public void updateUI(boolean delay) {
+        if (delay) {
+            /* Slight delay to allow for Google Play Games popup to show */
+            new android.os.Handler().postDelayed(() -> {
+                        Intent i = new Intent(this, DrawingActivity.class);
+                        startActivity(i);
+                    },
+                    300);
+        } else {
+            Intent i = new Intent(this, DrawingActivity.class);
+            startActivity(i);
+        }
     }
 
     @Override
@@ -142,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             .addOnCompleteListener(this, task -> {
                 progressbar.setVisibility(View.INVISIBLE);
                 if (task.isSuccessful()) {
-                    updateUI();
+                    updateUI(true);
                 } else {
                     String msg = task.getException() == null ?
                             "Something went wrong, please try again!" :
@@ -190,7 +199,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             if (user != null) {
                                 if (user.isEmailVerified()) {
-                                    updateUI();
+                                    updateUI(false);
                                 } else {
                                     new AlertDialog.Builder(this)
                                             .setMessage("User is not verified, do you want to verify now?")

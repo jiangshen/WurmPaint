@@ -2,29 +2,32 @@ package com.example.caden.drawingtest;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.MenuItem;
 
-/**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
- */
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.auth.UserProfileChangeRequest;
+
+import java.util.List;
+import java.util.Objects;
+
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
+    private static FirebaseUser user;
+    private static String userName;
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -39,6 +42,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             int index = listPreference.findIndexOfValue(strVal);
             // Set the summary to reflect the new value.
             pref.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
+        } else if (pref instanceof EditTextPreference) {
+            if (pref.getKey().equals("user_name")) {
+                userName = strVal;
+                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                        .setDisplayName(userName)
+                        .build();
+                user.updateProfile(profileUpdates);
+            }
+            pref.setSummary(strVal);
         } else {
             // For all other preferences, set the summary to the value's
             // simple string representation.
@@ -46,6 +58,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
         return true;
     };
+
 
     /**
      * Helper method to determine if the device has an extra-large screen. For
@@ -80,9 +93,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
         getFragmentManager().beginTransaction().replace(android.R.id.content,
                 new WurmPrefFragment()).commit();
         setupActionBar();
+
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.putString("user_name", user.getDisplayName());
+        editor.putString("user_email", user.getEmail());
+
+        editor.apply();
     }
 
     private void setupActionBar() {
@@ -126,14 +147,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             addPreferencesFromResource(R.xml.pref_wurm);
             setHasOptionsMenu(true);
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
+            for (UserInfo u : user.getProviderData()) {
+                if (u.getProviderId().equals("google.com")) {
+                    findPreference("user_email").setEnabled(false);
+                }
+            }
+
             bindPreferenceSummaryToValue(findPreference("user_name"));
             bindPreferenceSummaryToValue(findPreference("user_email"));
 
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+//            bindPreferenceSummaryToValue(findPreference("example_list"));
         }
 
         @Override

@@ -11,6 +11,9 @@
                 <item android:id="@+id/nav_leaderboard"
                     android:icon="@drawable/ic_people"
                     android:title="Leaderboard" />
+                <item android:id="@+id/nav_gplay_setting"
+                    android:icon="@drawable/ic_games"
+                    android:title="Google Play Settings" />
                 <item android:id="@+id/nav_logout"
                     android:icon="@drawable/ic_exit_to_app"
                     android:title="Log out" />

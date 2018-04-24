@@ -18,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,9 +36,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.AchievementsClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.LeaderboardsClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -68,6 +73,7 @@ public class DrawingActivity extends AppCompatActivity
     private static final int PIXEL_HEIGHT = 280;
     private static final int RC_ACHIEVEMENT_UI = 9003;
     private static final int RC_LEADERBOARD_UI = 9004;
+    private static final int RC_SETTING_UI = 9005;
 
     /* Variables */
     String currBatchName;
@@ -101,6 +107,7 @@ public class DrawingActivity extends AppCompatActivity
     ProgressBar barSend;
     FloatingActionButton fabSend;
     TextView navUserEmail;
+    TextView navUserName;
     TextView tvImageName;
     TextView tvUserScore;
 
@@ -113,6 +120,8 @@ public class DrawingActivity extends AppCompatActivity
     DrawerLayout drawer;
     NavigationView navView;
     View navHeaderLayout;
+
+    boolean isGoogleSignIn = false;
 
 
     @Override
@@ -138,6 +147,12 @@ public class DrawingActivity extends AppCompatActivity
         userUID = mUser.getUid();
         userEmail = mUser.getEmail();
 
+        for (UserInfo u : mUser.getProviderData()) {
+            if (u.getProviderId().equals("google.com")) {
+                isGoogleSignIn = true;
+            }
+        }
+
         // get drawing view from XML (where the finger writes the number)
         drawView = findViewById(R.id.draw);
 
@@ -160,10 +175,23 @@ public class DrawingActivity extends AppCompatActivity
         navUserEmail.setText(userEmail);
         tvImageName = findViewById(R.id.tv_img_name);
 
-        TextView navUserName = navHeaderLayout.findViewById(R.id.nav_drawer_name);
+        navUserName = navHeaderLayout.findViewById(R.id.nav_drawer_name);
         String userName = mUser.getDisplayName();
-        if (!(userName == null || userName.equals(""))) {
-            navUserName.setText(userName);
+        if (userName == null || userName.equals("")) {
+            /* New users gets the default name */
+            userName = getString(R.string.default_user_name);
+            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                    .setDisplayName(userName)
+                    .build();
+            mUser.updateProfile(profileUpdates);
+        }
+        navUserName.setText(userName);
+
+        if (!isGoogleSignIn) {
+            Menu menu = navView.getMenu();
+            menu.findItem(R.id.nav_achievements).setEnabled(false);
+            menu.findItem(R.id.nav_leaderboard).setEnabled(false);
+            menu.findItem(R.id.nav_gplay_setting).setEnabled(false);
         }
 
 //        FIXME get user profile photo
@@ -203,7 +231,9 @@ public class DrawingActivity extends AppCompatActivity
         /* Google Play Game */
         gAcct = GoogleSignIn.getLastSignedInAccount(this);
         if (gAcct != null) {
-//            Games.getGamesClient(this, gAcct).setViewForPopups(clDrawMain);
+            Games.getGamesClient(this, gAcct).setViewForPopups(clDrawMain);
+        }
+        if (isGoogleSignIn) {
             mAchClient = Games.getAchievementsClient(this, gAcct);
             mLeadClient = Games.getLeaderboardsClient(this, gAcct);
         }
@@ -212,10 +242,12 @@ public class DrawingActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.nav_achievements) {
+        if (id == R.id.nav_achievements && isGoogleSignIn) {
             showAchievements();
-        } else if (id == R.id.nav_leaderboard) {
+        } else if (id == R.id.nav_leaderboard && isGoogleSignIn) {
             showLeaderBoard();
+        } else if (id == R.id.nav_gplay_setting && isGoogleSignIn) {
+            showGPlaySettings();
         } else if (id == R.id.nav_logout) {
             logOut();
         } else if (id == R.id.nav_settings) {
@@ -229,18 +261,20 @@ public class DrawingActivity extends AppCompatActivity
         return true;
     }
 
+
     private void showAchievements() {
-        if (gAcct != null) {
-            mAchClient.getAchievementsIntent()
-                    .addOnSuccessListener((intent -> startActivityForResult(intent, RC_ACHIEVEMENT_UI)));
-        }
+        mAchClient.getAchievementsIntent()
+                .addOnSuccessListener((intent -> startActivityForResult(intent, RC_ACHIEVEMENT_UI)));
     }
 
     private void showLeaderBoard() {
-        if (gAcct != null) {
-            mLeadClient.getLeaderboardIntent(getString(R.string.leaderboard_wurm_scores_id))
-                    .addOnSuccessListener((intent -> startActivityForResult(intent, RC_LEADERBOARD_UI)));
-        }
+        mLeadClient.getLeaderboardIntent(getString(R.string.leaderboard_wurm_scores_id))
+                .addOnSuccessListener((intent -> startActivityForResult(intent, RC_LEADERBOARD_UI)));
+    }
+
+    private void showGPlaySettings() {
+        Games.getGamesClient(this, gAcct).getSettingsIntent()
+                .addOnSuccessListener((intent -> startActivityForResult(intent, RC_SETTING_UI)));
     }
 
     private void showSettings() {
@@ -277,6 +311,17 @@ public class DrawingActivity extends AppCompatActivity
     // say he presses home button and then comes back to app, onResume() is called.
     protected void onResume() {
         drawView.onResume();
+        if (GoogleSignIn.getLastSignedInAccount(this) == null) {
+            FirebaseAuth.getInstance().signOut();
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
+        }
+        mUser.reload().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                navUserName.setText(mUser.getDisplayName());
+                navUserEmail.setText(mUser.getEmail());
+            }
+        });
         super.onResume();
     }
 

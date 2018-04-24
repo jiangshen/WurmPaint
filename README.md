@@ -8,6 +8,14 @@ Android drawing application for annotating the backbone of worms.
 
 ## Releases
 
+### 1.08 (2018-04-23)
+- Added about screen
+- Redesigned navigation drawer layout
+- Added user preferences
+- Update navigation drawer based on whether user is signed in via Google or otherwise
+- App automatically signs out if Google Account is signed out.
+- Added more Google Play Achievements
+
 ### 1.07 (2018-04-14)
 - Added user scores in FireBase
 - More robust image loading from FireBase

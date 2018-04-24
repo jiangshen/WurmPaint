@@ -28,22 +28,13 @@
     <string name="reset_psw_text">Reset Password</string>
     <string name="reenter_email_text">Re-enter your email</string>
     <string name="reset_text">Reset</string>
-    <string name="app_id">52423362671</string>
-    <string name="achievement_newbie_id">CgkI75C0pcMBEAIQAQ</string>
-    <string name="leaderboard_wurm_scores_id">CgkI75C0pcMBEAIQAw</string>
+    <string name="app_id" translatable="false">52423362671</string>
+    <string name="achievement_newbie_id" translatable="false">CgkI75C0pcMBEAIQAQ</string>
+    <string name="leaderboard_wurm_scores_id" translatable="false">CgkI75C0pcMBEAIQAw</string>
+    <string name="default_user_name">Wurm Painter</string>
+
+    <!-- Settings -->
     <string name="title_activity_settings">Wurm Settings</string>
-
-    <!-- Strings related to Settings -->
-
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>
@@ -56,13 +47,12 @@
     </string-array>
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
-    <string name="pref_psw_summary">••••••••</string>
-    <string name="default_user_name">Wurm Painter</string>
-    <string name="about_screen_text">
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+
+
+    <!-- About -->
+    <string name="change_log_text" translatable="false">
         <![CDATA[
-            <h1>About</h1>
-                <p>Android drawing application for annotating the backbone of worms.</p>
-                <a href="https://github.com/jiangshen/WurmPaint">Project Source Code Repository</a>
             <h1>Changelog</h1>
                 <h3>1.07 (2018-04-14)</h3>
                     <span>
@@ -121,6 +111,20 @@
                     <span>
                         - Initial Release <br />
                     </span>
+        ]]>
+    </string>
+    <string name="title_activity_about">About Wurm Paint</string>
+    <string name="about_app_text" translatable="false">
+        <![CDATA[
+            <h1>About</h1>
+                <p>Android drawing application for annotating the backbone of worms.</p>
+                <a href="https://github.com/jiangshen/WurmPaint">Project Source Code Repository</a>
+        ]]>
+    </string>
+    <string name="privacy_policy_text" translatable="false">
+        <![CDATA[
+            <h1>Privacy Policy</h1>
+
         ]]>
     </string>
 
