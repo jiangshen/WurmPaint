@@ -8,6 +8,14 @@ Android drawing application for annotating the backbone of worms.
 
 ## Releases
 
+### 1.09 (2018-4-28)
+- Updated Achievements scoring
+- Updated LeaderBoard submissions
+- User can now draw in different colors
+- Added color wheel type in settings
+- Added Wurm-o-Meter screen with user scores
+- Added Colorful Wurms achievement that unlocks color annotation
+
 ### 1.08 (2018-04-23)
 - Added about screen
 - Redesigned navigation drawer layout

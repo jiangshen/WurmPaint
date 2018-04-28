@@ -9,4 +9,7 @@ import java.util.List;
 class SharedData {
     static byte[] imgData;
     static List lineData;
+    static int lineColor;
+    static int userScore;
+    static boolean isGoogleSignIn;
 }

@@ -4,28 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.SwitchPreference;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.auth.UserProfileChangeRequest;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -33,18 +27,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private static String userName;
     private static SharedPreferences sharedPrefs;
 
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
     private static Preference.OnPreferenceChangeListener sBindPrefSummaryToValListener = (pref, val) -> {
         String strVal = val.toString();
         if (pref instanceof ListPreference) {
-            // For list preferences, look up the correct display value in
-            // the preference's 'entries' list.
             ListPreference listPreference = (ListPreference) pref;
             int index = listPreference.findIndexOfValue(strVal);
-            // Set the summary to reflect the new value.
+            sharedPrefs.edit().putInt("wheel_type", index).apply();
             pref.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
         } else if (pref instanceof EditTextPreference) {
             if (pref.getKey().equals("user_name")) {
@@ -56,42 +44,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
             pref.setSummary(strVal);
         } else {
-            // For all other preferences, set the summary to the value's
-            // simple string representation.
             pref.setSummary(strVal);
         }
         return true;
     };
 
 
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
     private static boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
 
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     *
-     * @see #sBindPrefSummaryToValListener
-     */
     private static void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
         preference.setOnPreferenceChangeListener(sBindPrefSummaryToValListener);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        sBindPrefSummaryToValListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
+        sBindPrefSummaryToValListener.onPreferenceChange(preference, PreferenceManager
+                .getDefaultSharedPreferences(preference.getContext())
+                .getString(preference.getKey(), ""));
     }
 
     @Override
@@ -135,10 +103,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return isXLargeTablet(this);
     }
 
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || WurmPrefFragment.class.getName().equals(fragmentName);
@@ -159,6 +123,26 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             }
             bindPreferenceSummaryToValue(findPreference("user_name"));
             bindPreferenceSummaryToValue(findPreference("user_email"));
+            bindPreferenceSummaryToValue(findPreference("draw_color_type"));
+
+            SwitchPreference colorPref = (SwitchPreference) findPreference("draw_color");
+            if (SharedData.userScore < 125) {
+                colorPref.setEnabled(false);
+            } else {
+                colorPref.setEnabled(true);
+                /* Set true to it only one time */
+                if(sharedPrefs.getBoolean("color_enabled_first_time", false)) {
+                    colorPref.setChecked(true);
+                    sharedPrefs.edit()
+                            .putBoolean("color_enabled_first_time", true)
+                            .putBoolean("draw_in_color", true).apply();
+                }
+                /* Set Listener for further changes */
+                colorPref.setOnPreferenceChangeListener(((p, o) -> {
+                    sharedPrefs.edit().putBoolean("draw_in_color", (boolean) o).apply();
+                    return true;
+                }));
+            }
         }
 
         @Override

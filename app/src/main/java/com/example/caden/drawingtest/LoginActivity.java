@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         Intent i = new Intent(this, DrawingActivity.class);
                         startActivity(i);
                     },
-                    300);
+                    250);
         } else {
             Intent i = new Intent(this, DrawingActivity.class);
             startActivity(i);

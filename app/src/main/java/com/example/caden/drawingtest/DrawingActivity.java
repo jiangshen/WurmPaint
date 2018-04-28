@@ -1,10 +1,14 @@
 package com.example.caden.drawingtest;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -18,7 +22,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionManager;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -30,6 +33,8 @@ import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.flask.colorpicker.ColorPickerView;
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.AchievementsClient;
@@ -71,7 +76,6 @@ public class DrawingActivity extends AppCompatActivity
     private static final int RC_ACHIEVEMENT_UI = 9003;
     private static final int RC_LEADERBOARD_UI = 9004;
     private static final int RC_SETTING_UI = 9005;
-    private static final int RC_LEADERBOARD_SCORE = 1337;
 
     /* Variables */
     String currBatchName;
@@ -83,12 +87,13 @@ public class DrawingActivity extends AppCompatActivity
     /* Views */
     private DrawModel drawModel;
     private DrawView drawView;
-    private PointF mTmpPoint = new PointF();
+    private PointF mTmpPt = new PointF();
 
     private float mLastX;
     private float mLastY;
 
     Button btnMarkBad;
+    Button btnColor;
 
     /* FireBase */
     private FirebaseStorage mStorage;
@@ -101,13 +106,15 @@ public class DrawingActivity extends AppCompatActivity
     AchievementsClient mAchClient;
     LeaderboardsClient mLeadClient;
 
+    /* Settings */
+    SharedPreferences sharedPref;
+
     Toolbar toolbar;
     ProgressBar barSend;
     FloatingActionButton fabSend;
     TextView navUserEmail;
     TextView navUserName;
     TextView tvImageName;
-    TextView tvUserScore;
 
     String userUID;
     String userEmail;
@@ -120,7 +127,6 @@ public class DrawingActivity extends AppCompatActivity
     View navHeaderLayout;
 
     boolean isGoogleSignIn = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,8 +156,8 @@ public class DrawingActivity extends AppCompatActivity
                 isGoogleSignIn = true;
             }
         }
+        SharedData.isGoogleSignIn = isGoogleSignIn;
 
-        // get drawing view from XML (where the finger writes the number)
         drawView = findViewById(R.id.draw);
 
         /* Get Wurm image from FireBase */
@@ -159,13 +165,10 @@ public class DrawingActivity extends AppCompatActivity
         fireBaseRetrieveUserScore();
         updateLeaderBoard();
 
-        tvUserScore = findViewById(R.id.tv_user_score);
-        tvUserScore.setText(String.valueOf(userScore));
-
-
         /* Get the Draw Model Object */
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_HEIGHT);
         btnMarkBad = findViewById(R.id.btn_mark_bad);
+        btnColor = findViewById(R.id.btn_color);
         clDrawMain = findViewById(R.id.cl_draw_main);
         navView = findViewById(R.id.nav_view);
         navView.setNavigationItemSelectedListener(this);
@@ -209,13 +212,11 @@ public class DrawingActivity extends AppCompatActivity
 //        }
 
         constraintSet.clone(clDrawMain);
-        dp56 = dpToPx(56);
+        dp56 = Util.dpToPx(56, getResources().getDisplayMetrics());
         fabSend = findViewById(R.id.fab_send);
         barSend = findViewById(R.id.pbar_send);
 
-        // init the view with the model object
         drawView.setModel(drawModel);
-        // give it a touch listener to activate when the user taps
         drawView.setOnTouchListener(this);
 
         /* Re-adjust the height to be almost the same as screen width */
@@ -229,13 +230,19 @@ public class DrawingActivity extends AppCompatActivity
 
         /* Google Play Game */
         gAcct = GoogleSignIn.getLastSignedInAccount(this);
-        if (gAcct != null) {
+        if (gAcct != null && isGoogleSignIn) {
             Games.getGamesClient(this, gAcct).setViewForPopups(clDrawMain);
-        }
-        if (isGoogleSignIn) {
             mAchClient = Games.getAchievementsClient(this, gAcct);
             mLeadClient = Games.getLeaderboardsClient(this, gAcct);
         }
+
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        btnColor.setVisibility(sharedPref.getBoolean("draw_in_color", false) ?
+                View.VISIBLE : View.INVISIBLE);
+
+        SharedData.lineColor =
+                sharedPref.getInt("line_color", Color.parseColor("#FF2646"));
+        btnColor.setBackgroundTintList(ColorStateList.valueOf(SharedData.lineColor));
     }
 
     @Override
@@ -245,6 +252,8 @@ public class DrawingActivity extends AppCompatActivity
             showAchievements();
         } else if (id == R.id.nav_leaderboard && isGoogleSignIn) {
             showLeaderBoard();
+        } else if (id == R.id.nav_wurm_meter) {
+            showWurmMeter();
         } else if (id == R.id.nav_gplay_setting && isGoogleSignIn) {
             showGPlaySettings();
         } else if (id == R.id.nav_logout) {
@@ -258,6 +267,11 @@ public class DrawingActivity extends AppCompatActivity
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void showWurmMeter() {
+        Intent intent = new Intent(this, WurmMeterActivity.class);
+        startActivity(intent);
     }
 
 
@@ -306,17 +320,15 @@ public class DrawingActivity extends AppCompatActivity
     }
 
     @Override
-    // OnResume() is called when the user resumes his Activity which he left a while ago,
-    // say he presses home button and then comes back to app, onResume() is called.
     protected void onResume() {
         drawView.onResume();
-        updateLeaderBoard();
-
         if (GoogleSignIn.getLastSignedInAccount(this) == null) {
             FirebaseAuth.getInstance().signOut();
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
         }
+        btnColor.setVisibility(sharedPref.getBoolean("draw_in_color", false) ?
+                View.VISIBLE : View.INVISIBLE);
         mUser.reload().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 navUserName.setText(mUser.getDisplayName());
@@ -327,17 +339,9 @@ public class DrawingActivity extends AppCompatActivity
     }
 
     @Override
-    // OnPause() is called when the user receives an event like a call or a text message,
-    // when onPause() is called the Activity may be partially or completely hidden.
     protected void onPause() {
         drawView.onPause();
         super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        updateLeaderBoard();
-        super.onStop();
     }
 
     @Override
@@ -367,6 +371,27 @@ public class DrawingActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    public void changeColor(View v) {
+        ColorPickerView.WHEEL_TYPE wheelType = sharedPref.getInt("wheel_type", 0) == 0 ?
+                ColorPickerView.WHEEL_TYPE.FLOWER : ColorPickerView.WHEEL_TYPE.CIRCLE;
+        ColorPickerDialogBuilder
+                .with(this)
+                .setTitle("Pick Color")
+                .initialColor(SharedData.lineColor)
+                .wheelType(wheelType)
+                .lightnessSliderOnly()
+                .density(16)
+                .setOnColorSelectedListener(selectedColor -> {})
+                .setPositiveButton("ok", (dialog, selectedColor, allColors) -> {
+                    SharedData.lineColor = selectedColor;
+                    sharedPref.edit().putInt("line_color", selectedColor).apply();
+                    btnColor.setBackgroundTintList(ColorStateList.valueOf(selectedColor));
+                })
+                .setNegativeButton("cancel", (dialog, which) -> {})
+                .build()
+                .show();
+    }
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         int action = event.getAction() & MotionEvent.ACTION_MASK;
@@ -378,6 +403,7 @@ public class DrawingActivity extends AppCompatActivity
             return true;
         } else if (action == MotionEvent.ACTION_UP) {
             processTouchUp();
+            v.performClick();
             return true;
         }
         return false;
@@ -387,28 +413,25 @@ public class DrawingActivity extends AppCompatActivity
         if (!alreadyDrawn) {
             mLastX = event.getX();
             mLastY = event.getY();
-            drawView.calcPos(mLastX, mLastY, mTmpPoint);
-            float lastConvX = mTmpPoint.x;
-            float lastConvY = mTmpPoint.y;
-            drawModel.startLine(lastConvX, lastConvY);
+            drawView.calcPos(mLastX, mLastY, mTmpPt);
+            float lastX = mTmpPt.x;
+            float lastY = mTmpPt.y;
+            drawModel.startLine(lastX, lastY);
         }
     }
 
     /**
-     * The main drawing function
-     * it actually stores all the drawing positions
-     * into the drawModel object
-     * we actually render the drawing from that object
-     * in the drawRenderer class
+     * The main drawing function, stores all the drawing positions into the drawModel object
+     * Render the drawing from that object in the drawRenderer class
      * @param event motion event
      */
     private void processTouchMove(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
 
-        drawView.calcPos(x, y, mTmpPoint);
-        float newConvX = mTmpPoint.x;
-        float newConvY = mTmpPoint.y;
+        drawView.calcPos(x, y, mTmpPt);
+        float newConvX = mTmpPt.x;
+        float newConvY = mTmpPt.y;
         drawModel.addLineElem(newConvX, newConvY);
 
         mLastX = x;
@@ -491,9 +514,10 @@ public class DrawingActivity extends AppCompatActivity
 
         /* Update User Score internally, with FireBase and with Google Play Games */
         userScore++;
+        SharedData.userScore = userScore;
         updateWurmsAchievements();
+        updateLeaderBoard();
 
-        tvUserScore.setText(String.valueOf(userScore));
         mDatabase.child("user_scores").child(mUser.getUid()).setValue(userScore);
         mFirebaseAnalytics.setUserProperty("user_score", String.valueOf(userScore));
 
@@ -556,6 +580,10 @@ public class DrawingActivity extends AppCompatActivity
         if (isGoogleSignIn) {
             mAchClient.increment(getString(R.string.achievement_newbie_1_id), 1);
             mAchClient.increment(getString(R.string.achievement_newbie_2_id), 1);
+            if (userScore == 125) {
+                mAchClient.unlock(getString(R.string.achievement_colorful_id));
+                btnColor.setVisibility(View.VISIBLE);
+            }
             mAchClient.increment(getString(R.string.achievement_growing_1_id), 1);
             mAchClient.increment(getString(R.string.achievement_growing_2_id), 1);
             mAchClient.increment(getString(R.string.achievement_silver_id), 1);
@@ -577,7 +605,7 @@ public class DrawingActivity extends AppCompatActivity
 
     private void updateLeaderBoard() {
         if (isGoogleSignIn && userScore > 0) {
-            mLeadClient.submitScore(getString(R.string.leaderboard_wurm_scores_id), RC_LEADERBOARD_SCORE);
+            mLeadClient.submitScore(getString(R.string.leaderboard_wurm_scores_id), userScore);
         }
 
     }
@@ -600,7 +628,6 @@ public class DrawingActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 readUserScore((HashMap)dataSnapshot.getValue());
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
@@ -618,11 +645,11 @@ public class DrawingActivity extends AppCompatActivity
                 Long score = (Long)dict.get(mUser.getUid());
                 userScore = score.intValue();
                 mFirebaseAnalytics.setUserProperty("user_score", String.valueOf(userScore));
-                tvUserScore.setText(String.valueOf(userScore));
             } else {
                 /* First time again */
                 mDatabase.child("user_scores").child(mUser.getUid()).setValue(userScore);
             }
+            SharedData.userScore = userScore;
         }
     }
 
@@ -636,7 +663,7 @@ public class DrawingActivity extends AppCompatActivity
             int randKey = rand.nextInt(keyLen);
 
             currBatchName = keyArray[randKey];
-            currBatchSize = longToInt((Long) dict.get(currBatchName));
+            currBatchSize = Util.longToInt((Long) dict.get(currBatchName));
             currImgNo = rand.nextInt(currBatchSize) + 1;
             tvImageName.setText(String.format(Locale.getDefault(), "%s / %d.png", currBatchName, currImgNo));
 
@@ -662,7 +689,7 @@ public class DrawingActivity extends AppCompatActivity
             Random rand = new Random();
             int randKey = rand.nextInt(keyLen);
             currBatchName = keyArray[randKey];
-            currBatchSize = longToInt((Long) uploadsDict.get(currBatchName));
+            currBatchSize = Util.longToInt((Long) uploadsDict.get(currBatchName));
             currImgNo = rand.nextInt(currBatchSize) + 1;
             tvImageName.setText(String.format(Locale.getDefault(),"%s / %d.png", currBatchName, currImgNo));
 
@@ -678,23 +705,5 @@ public class DrawingActivity extends AppCompatActivity
             });
         }
 
-    }
-
-    /**
-     * Converts dp into pixel values
-     * @param dp    display pixels
-     * @return      pixel values
-     */
-    private int dpToPx(int dp) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                dp, getResources().getDisplayMetrics());
-    }
-
-    private int longToInt(long l) {
-        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException
-                    (l + " cannot be cast to int without changing its value.");
-        }
-        return (int) l;
     }
 }

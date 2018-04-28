@@ -25,7 +25,7 @@ public class DrawRenderer {
             //get the whole line from the model object
             DrawModel.Line line = model.getLine(i);
             //set its color
-            paint.setColor(Color.parseColor("#FF2646"));
+            paint.setColor(SharedData.lineColor);
             //get the first of many lines that make up the overall line
             int elemSize = line.getElemSize();
             //if its empty, skip

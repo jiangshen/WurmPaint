@@ -56,6 +56,7 @@
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -73,11 +74,11 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".SettingsActivity"
-            android:screenOrientation="portrait"
+            android:configChanges="locale"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".DrawingActivity"
-            android:theme="@style/AppTheme.Settings"
-            android:configChanges="locale">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Settings">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.caden.drawingtest.DrawingActivity" />
@@ -86,7 +87,11 @@
             android:name=".AboutActivity"
             android:label="@string/title_activity_about"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Settings"/>
+            android:theme="@style/AppTheme.Settings" />
+        <activity android:name=".WurmMeterActivity"
+            android:label="@string/menu_wurm_meter"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.WurmMeter"/>
     </application>
 
 </manifest>

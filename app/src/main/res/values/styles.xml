@@ -23,6 +23,13 @@
         <item name="windowNoTitle">false</item>
     </style>
 
+    <style name="AppTheme.WurmMeter">
+        <item name="colorPrimary">#607D8B</item>
+        <item name="colorPrimaryDark">#607D8B</item>
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">false</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 

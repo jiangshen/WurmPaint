@@ -15,16 +15,15 @@
     <string name="clear_text">Clear</string>
 
     <string name="placeholder_email">user@wurmpaint.co</string>
-    <string name="sign_out_text">Sign Out</string>
     <string name="next_random_text">Next Random</string>
-    <string name="mark_as_bad">Mark as bad</string>
+    <string name="mark_as_bad">Mark As Bad</string>
     <string name="reason_marking_image">Any reasons for marking this image?</string>
-    <string name="img_name_placeholder">###/###.png</string>
+    <string name="img_name_placeholder" translatable="false">###/###.png</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="default_email_name">wurm.painter@gmail.com</string>
-    <string name="default_notification_channel_id">my_channel_01</string>
+    <string name="default_notification_channel_id" translatable="false">my_channel_01</string>
     <string name="reset_psw_text">Reset Password</string>
     <string name="reenter_email_text">Re-enter your email</string>
     <string name="reset_text">Reset</string>
@@ -34,6 +33,7 @@
 
     <string name="achievement_newbie_1_id" translatable="false">CgkI75C0pcMBEAIQAQ</string>
     <string name="achievement_newbie_2_id" translatable="false">CgkI75C0pcMBEAIQBA</string>
+    <string name="achievement_colorful_id" translatable="false">CgkI75C0pcMBEAIQDw</string>
     <string name="achievement_growing_1_id" translatable="false">CgkI75C0pcMBEAIQBQ</string>
     <string name="achievement_growing_2_id" translatable="false">CgkI75C0pcMBEAIQBg</string>
     <string name="achievement_silver_id" translatable="false">CgkI75C0pcMBEAIQBw</string>
@@ -49,20 +49,49 @@
 
     <string name="leaderboard_wurm_scores_id" translatable="false">CgkI75C0pcMBEAIQAw</string>
 
-
     <string name="default_user_name">Wurm Painter</string>
 
     <!-- Settings -->
     <string name="title_activity_settings">Wurm Settings</string>
+    <string name="pref_change_language_title">Change Language</string>
+    <string name="pref_color_wheel_title">Color Wheel Type</string>
+    <string-array name="pref_color_wheel_list_titles">
+        <item>Flower</item>
+        <item>Circle</item>
+    </string-array>
+    <string-array name="pref_color_wheel_list_indices">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
 
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-
+    <!-- Navigation Drawer -->
+    <string name="cat_menu_player">Player</string>
+    <string name="menu_achievements">Achievements</string>
+    <string name="menu_leaderboard">Leaderboard</string>
+    <string name="menu_wurm_meter">Wurm-o-Meter</string>
+    <string name="manu_wurm_history">Wurm Logbook</string>
+    <string name="menu_gplay_settings">Google Play Settings</string>
+    <string name="menu_log_out">Log Out</string>
+    <string name="cat_menu_manage">Manage</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_send_feedback">Send Feedback</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_about">About</string>
 
     <!-- About -->
     <string name="change_log_text" translatable="false">
         <![CDATA[
             <h1>Changelog</h1>
+                <h3>1.08 (2018-04-24)</h3>
+                    <span>
+                        - Added about screen <br />
+                        - Redesigned navigation drawer layout <br />
+                        - Added user preferences <br />
+                        - Update navigation drawer based on whether user is signed in via Google or otherwise <br />
+                        - App automatically signs out if Google Account is signed out. <br />
+                        - Added more Google Play Achievements <br />
+                    </span>
+
                 <h3>1.07 (2018-04-14)</h3>
                     <span>
                         - Added user scores in FireBase <br />
@@ -109,7 +138,7 @@
                         - Removed brush color functionality <br />
                         - Images expanded to fill the screen <br />
                         - User restricted to drawing single strokes <br />
-                        - User can mark images as bad and provide a reason <br />
+                        - User can mark images as bad and provide a reason <br />v
                         - Optimized for tablet displays <br />
                     </span>
                 <h3>1.01 (2017-12-01)</h3>
@@ -136,5 +165,8 @@
 
         ]]>
     </string>
-
+    <string name="text_tip">
+        Switch to a <b>Google</b> account for more achievement and compete with your friends on the leaderboard!
+    </string>
+    <string name="content_desc_iv_tip">Light bulb graphic</string>
 </resources>

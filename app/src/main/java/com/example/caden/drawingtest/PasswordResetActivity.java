@@ -86,9 +86,7 @@ public class PasswordResetActivity extends AppCompatActivity {
                     .addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             Snackbar.make(v, "Reset email sent", Snackbar.LENGTH_LONG)
-                                    .setAction("Back to login", view -> {
-                                        backToLogin(v);
-                                    })
+                                    .setAction("Back to login", view -> backToLogin(v))
                                     .show();
                         } else {
                             Snackbar.make(v, "User may not exist, please enter correct email",

@@ -3,38 +3,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
     <group>
-        <item android:title="Player">
+        <item android:title="@string/cat_menu_player">
             <menu>
                 <item android:id="@+id/nav_achievements"
                     android:icon="@drawable/ic_stars"
-                    android:title="Achievements" />
+                    android:title="@string/menu_achievements" />
                 <item android:id="@+id/nav_leaderboard"
                     android:icon="@drawable/ic_people"
-                    android:title="Leaderboard" />
+                    android:title="@string/menu_leaderboard" />
+                <item android:id="@+id/nav_wurm_meter"
+                    android:icon="@drawable/ic_wurm_meter"
+                    android:title="@string/menu_wurm_meter" />
                 <item android:id="@+id/nav_gplay_setting"
                     android:icon="@drawable/ic_games"
-                    android:title="Google Play Settings" />
+                    android:title="@string/menu_gplay_settings" />
                 <item android:id="@+id/nav_logout"
                     android:icon="@drawable/ic_exit_to_app"
-                    android:title="Log out" />
+                    android:title="@string/menu_log_out" />
             </menu>
         </item>
     </group>
     <group>
-        <item android:title="Manage">
+        <item android:title="@string/cat_menu_manage">
             <menu>
                 <item android:id="@+id/nav_settings"
                     android:icon="@drawable/ic_settings"
-                    android:title="Settings" />
+                    android:title="@string/menu_settings" />
                 <item android:id="@+id/nav_send_feedback"
                     android:icon="@drawable/ic_feedback"
-                    android:title="Send Feedback" />
+                    android:title="@string/menu_send_feedback" />
                 <item android:id="@+id/nav_help"
                     android:icon="@drawable/ic_help"
-                    android:title="Help" />
+                    android:title="@string/menu_help" />
                 <item android:id="@+id/nav_about"
                     android:icon="@drawable/ic_info"
-                    android:title="About" />
+                    android:title="@string/menu_about" />
             </menu>
         </item>
     </group>

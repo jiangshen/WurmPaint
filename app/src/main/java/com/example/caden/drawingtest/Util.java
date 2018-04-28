@@ -1,5 +1,8 @@
 package com.example.caden.drawingtest;
 
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
+
 import java.util.regex.Pattern;
 
 /**
@@ -14,8 +17,8 @@ class Util {
     /**
      * RFC822 Compliant Email Validation
      *
-     * @param s email string
-     * @return  whether email is valid
+     * @param s     email string
+     * @return      whether email is valid
      */
     static boolean isEmailValid(String s) {
         return emailPtr.matcher(s).matches();
@@ -24,10 +27,32 @@ class Util {
     /**
      * Checks if password is at least 8 characters
      *
-     * @param s password string
-     * @return  whether password is valid
+     * @param s     password string
+     * @return      whether password is valid
      */
     static boolean isPasswordValid(String s) {
         return passwordPtr.matcher(s).matches();
+    }
+
+    /**
+     * Converts dp into pixel values
+     * @param dp    display pixels
+     * @param dm    display metrics
+     * @return      pixel values
+     */
+    static int dpToPx(int dp, DisplayMetrics dm) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, dm);
+    }
+
+    /**
+     * Safely converts long to ints
+     * @param l     long
+     * @return      ints
+     */
+    static int longToInt(long l) {
+        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(l + " cannot cast to int");
+        }
+        return (int) l;
     }
 }
