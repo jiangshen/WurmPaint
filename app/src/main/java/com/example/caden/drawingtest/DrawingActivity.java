@@ -740,9 +740,7 @@ public class DrawingActivity extends AppCompatActivity
             mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
                 SharedData.imgData = bytes;
                 clear(v);
-            }).addOnFailureListener(exception -> {
-            });
+            }).addOnFailureListener(exception -> {});
         }
-
     }
 }

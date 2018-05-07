@@ -68,6 +68,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         getFragmentManager().beginTransaction().replace(android.R.id.content,
                 new WurmPrefFragment()).commit();
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -82,15 +83,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            if (!super.onMenuItemSelected(featureId, item)) {
-                NavUtils.navigateUpFromSameTask(this);
-            }
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
             return true;
         }
-        return super.onMenuItemSelected(featureId, item);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
