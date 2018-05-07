@@ -1,4 +1,4 @@
-package com.example.caden.drawingtest;
+package com.caden.drawing.wurmpaint;
 
 import android.content.Context;
 import android.graphics.Bitmap;

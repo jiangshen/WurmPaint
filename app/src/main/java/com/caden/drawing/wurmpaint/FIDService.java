@@ -1,4 +1,4 @@
-package com.example.caden.drawingtest;
+package com.caden.drawing.wurmpaint;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;

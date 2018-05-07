@@ -1,4 +1,4 @@
-package com.example.caden.drawingtest;
+package com.caden.drawing.wurmpaint;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;

@@ -1,4 +1,4 @@
-package com.example.caden.drawingtest;
+package com.caden.drawing.wurmpaint;
 
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#607D8B"
-    tools:context="com.example.caden.drawingtest.LoginActivity">
+    tools:context="com.caden.drawing.wurmpaint.LoginActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"

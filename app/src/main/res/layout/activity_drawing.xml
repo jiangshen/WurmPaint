@@ -15,7 +15,7 @@
     android:id="@+id/cl_draw_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.caden.drawingtest.DrawingActivity"
+    tools:context="com.caden.drawing.wurmpaint.DrawingActivity"
     tools:layout_editor_absoluteY="81dp">
 
         <LinearLayout
@@ -54,7 +54,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/drawing_appBarLayout">
 
-        <com.example.caden.drawingtest.DrawView
+        <com.caden.drawing.wurmpaint.DrawView
             android:id="@+id/draw"
             android:layout_width="match_parent"
             android:layout_height="350dp"
