@@ -11,5 +11,7 @@ class SharedData {
     static List lineData;
     static int lineColor;
     static int userScore;
+    static int userTotal;
     static boolean isGoogleSignIn;
+    static int totalWurmsDrawn;
 }

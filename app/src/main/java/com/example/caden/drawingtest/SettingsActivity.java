@@ -14,7 +14,6 @@ import android.preference.SwitchPreference;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -69,7 +68,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         getFragmentManager().beginTransaction().replace(android.R.id.content,
                 new WurmPrefFragment()).commit();
-        setupActionBar();
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -77,13 +79,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         editor.putString("user_name", user.getDisplayName());
         editor.putString("user_email", user.getEmail());
         editor.apply();
-    }
-
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
     }
 
     @Override

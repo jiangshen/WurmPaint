@@ -30,6 +30,10 @@ public class AboutActivity extends AppCompatActivity {
         TextView tvPrivacyPolicy = findViewById(R.id.tv_privacy_policy);
         tvPrivacyPolicy.setText(Html.fromHtml(getString(R.string.privacy_policy_text)));
         tvPrivacyPolicy.setMovementMethod(LinkMovementMethod.getInstance());
+
+        TextView tvLicense = findViewById(R.id.tv_license);
+        tvLicense.setText(Html.fromHtml(getString(R.string.license_text)));
+        tvLicense.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     @Override

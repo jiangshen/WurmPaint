@@ -10,15 +10,15 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_wurm_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_wurm_icon"
         android:supportsRtl="true">
 
         <!-- FireBase Cloud Messaging -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@mipmap/ic_launcher" />
+            android:resource="@mipmap/ic_wurm_icon" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorPrimary" />
@@ -78,7 +78,7 @@
             android:label="@string/title_activity_settings"
             android:parentActivityName=".DrawingActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Settings">
+            android:theme="@style/AppTheme.WurmSettings">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.caden.drawingtest.DrawingActivity" />
@@ -87,11 +87,21 @@
             android:name=".AboutActivity"
             android:label="@string/title_activity_about"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Settings" />
-        <activity android:name=".WurmMeterActivity"
+            android:theme="@style/AppTheme.WurmAbout" />
+        <activity
+            android:name=".WurmMeterActivity"
             android:label="@string/menu_wurm_meter"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.WurmMeter"/>
+            android:theme="@style/AppTheme.WurmMeter" />
+        <activity
+            android:name=".HelpActivity"
+            android:label="@string/title_activity_help"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.WurmHelp" />
+        <activity android:name=".HistoryActivity"
+            android:label="@string/title_activity_wurm_history"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.WurmHistory"/>
     </application>
 
 </manifest>

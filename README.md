@@ -17,7 +17,7 @@ Android drawing application for annotating the backbone of worms.
 - Added Colorful Wurms achievement that unlocks color annotation
 
 ### 1.08 (2018-04-23)
-- Added about screen
+- Added About screen
 - Redesigned navigation drawer layout
 - Added user preferences
 - Update navigation drawer based on whether user is signed in via Google or otherwise

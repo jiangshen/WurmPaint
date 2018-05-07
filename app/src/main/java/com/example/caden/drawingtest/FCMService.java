@@ -15,7 +15,6 @@ public class FCMService extends FirebaseMessagingService {
 
     final int RC_Notify_ID = 1733;
 
-
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if (remoteMessage.getNotification() != null) {
@@ -32,7 +31,7 @@ public class FCMService extends FirebaseMessagingService {
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.mipmap.ic_wurm_icon)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(messageBody)
             .setAutoCancel(true)

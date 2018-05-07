@@ -127,6 +127,7 @@ public class DrawingActivity extends AppCompatActivity
     View navHeaderLayout;
 
     boolean isGoogleSignIn = false;
+    int userHistoryTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +165,7 @@ public class DrawingActivity extends AppCompatActivity
         fireBaseRetrieveImage();
         fireBaseRetrieveUserScore();
         updateLeaderBoard();
+        fireBaseUpdateUserTotals();
 
         /* Get the Draw Model Object */
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_HEIGHT);
@@ -245,6 +247,25 @@ public class DrawingActivity extends AppCompatActivity
         btnColor.setBackgroundTintList(ColorStateList.valueOf(SharedData.lineColor));
     }
 
+    private void fireBaseUpdateUserTotals() {
+        mDatabase.child("user_history").child("user_totals")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                HashMap map = (HashMap) dataSnapshot.getValue();
+                if (map != null && map.containsKey(userUID)) {
+                    userHistoryTotal = Util.longToInt((Long) map.get(userUID));
+                } else {
+                    userHistoryTotal = 0;
+                }
+                SharedData.userTotal = userHistoryTotal;
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
@@ -256,12 +277,16 @@ public class DrawingActivity extends AppCompatActivity
             showWurmMeter();
         } else if (id == R.id.nav_gplay_setting && isGoogleSignIn) {
             showGPlaySettings();
+        } else if (id == R.id.nav_wurm_history) {
+            showWurmHistory();
         } else if (id == R.id.nav_logout) {
             logOut();
         } else if (id == R.id.nav_settings) {
             showSettings();
         } else if (id == R.id.nav_send_feedback) {
             feedbackScreen();
+        } else if (id == R.id.nav_help) {
+            showHelp();
         } else if (id == R.id.nav_about) {
             showAbout();
         }
@@ -269,11 +294,20 @@ public class DrawingActivity extends AppCompatActivity
         return true;
     }
 
+    private void showWurmHistory() {
+        Intent intent = new Intent(this, HistoryActivity.class);
+        startActivity(intent);
+    }
+
     private void showWurmMeter() {
         Intent intent = new Intent(this, WurmMeterActivity.class);
         startActivity(intent);
     }
 
+    private void showHelp() {
+        Intent intent = new Intent(this, HelpActivity.class);
+        startActivity(intent);
+    }
 
     private void showAchievements() {
         mAchClient.getAchievementsIntent()
@@ -528,10 +562,15 @@ public class DrawingActivity extends AppCompatActivity
                 .child(timeFormat.format(date)).child("user_email").setValue(userEmail);
         mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
                 .child(timeFormat.format(date)).child("user_uid").setValue(userUID);
-
         /* Upload Database Line Data */
         mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
                 .child(timeFormat.format(date)).child("lines").setValue(SharedData.lineData);
+
+        DateFormat df = new SimpleDateFormat("EEE MMM dd, yyyy", Locale.US);
+        DateFormat tf = new SimpleDateFormat("hh:mm.ss aaa", Locale.US);
+        mDatabase.child("user_history").child(userUID).child(String.valueOf(userHistoryTotal++))
+                .setValue(new Wurm(df.format(date), tf.format(date), currBatchName, currImgNo));
+        mDatabase.child("user_history").child("user_totals").child(userUID).setValue(userHistoryTotal);
     }
 
     public void markAsBad(View v) {
@@ -577,13 +616,13 @@ public class DrawingActivity extends AppCompatActivity
     }
 
     private void updateWurmsAchievements() {
+        if (userScore == 125) {
+            if (isGoogleSignIn) mAchClient.unlock(getString(R.string.achievement_colorful_id));
+            btnColor.setVisibility(View.VISIBLE);
+        }
         if (isGoogleSignIn) {
             mAchClient.increment(getString(R.string.achievement_newbie_1_id), 1);
             mAchClient.increment(getString(R.string.achievement_newbie_2_id), 1);
-            if (userScore == 125) {
-                mAchClient.unlock(getString(R.string.achievement_colorful_id));
-                btnColor.setVisibility(View.VISIBLE);
-            }
             mAchClient.increment(getString(R.string.achievement_growing_1_id), 1);
             mAchClient.increment(getString(R.string.achievement_growing_2_id), 1);
             mAchClient.increment(getString(R.string.achievement_silver_id), 1);

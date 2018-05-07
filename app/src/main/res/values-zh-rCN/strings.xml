@@ -26,7 +26,7 @@
     <string name="cat_menu_player">玩家</string>
     <string name="menu_achievements">我的成就</string>
     <string name="menu_leaderboard">我的排名</string>
-    <string name="manu_wurm_history">虫的记录</string>
+    <string name="menu_wurm_history">虫的记录</string>
     <string name="menu_gplay_settings">Google Play 设置</string>
     <string name="menu_log_out">注销</string>
     <string name="cat_menu_manage">管理</string>
@@ -34,8 +34,9 @@
     <string name="menu_send_feedback">意见回馈</string>
     <string name="menu_help">帮助</string>
     <string name="menu_about">关于</string>
-    <string name="menu_wurm_meter">Wurm-o-Meter</string>
+    <string name="menu_wurm_meter">虫的成长</string>
     <string name="text_tip"><![CDATA[Switch to a <b>Google</b> account for more achievement and compete with your friends on the leaderboard!]]></string>
-    <string name="content_desc_iv_tip">Light bulb graphic</string>
     <string name="pref_color_wheel_title">颜色圈类型</string>
+    <string name="title_activity_help">Help the Wurms!</string>
+    <string name="title_activity_wurm_history">Wurm Logbook</string>
 </resources>
