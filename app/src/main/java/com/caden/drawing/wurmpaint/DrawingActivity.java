@@ -92,7 +92,9 @@ public class DrawingActivity extends AppCompatActivity
     private float mLastX;
     private float mLastY;
 
-    Button btnMarkBad;
+    Button btnReport;
+    Button btnNextRand;
+    Button btnClear;
     Button btnColor;
 
     /* FireBase */
@@ -169,7 +171,9 @@ public class DrawingActivity extends AppCompatActivity
 
         /* Get the Draw Model Object */
         drawModel = new DrawModel(PIXEL_WIDTH, PIXEL_HEIGHT);
-        btnMarkBad = findViewById(R.id.btn_mark_bad);
+        btnReport = findViewById(R.id.btn_mark_bad);
+        btnNextRand = findViewById(R.id.btn_next);
+        btnClear = findViewById(R.id.btn_clear);
         btnColor = findViewById(R.id.btn_color);
         clDrawMain = findViewById(R.id.cl_draw_main);
         navView = findViewById(R.id.nav_view);
@@ -512,6 +516,10 @@ public class DrawingActivity extends AppCompatActivity
         constraintSet.constrainHeight(R.id.cv_drawview, 0);
         constraintSet.constrainHeight(R.id.drawing_ll, dvHeight / 2);
         constraintSet.applyTo(clDrawMain);
+        btnReport.setEnabled(false);
+        btnNextRand.setEnabled(false);
+        btnClear.setEnabled(false);
+        btnColor.setEnabled(false);
 
         Bitmap bmp = drawView.getBitmapData();
         ByteArrayOutputStream baOS = new ByteArrayOutputStream();
@@ -542,6 +550,10 @@ public class DrawingActivity extends AppCompatActivity
             constraintSet.constrainHeight(R.id.cv_drawview, dvHeight);
             constraintSet.constrainHeight(R.id.drawing_ll, 0);
             constraintSet.applyTo(clDrawMain);
+            btnReport.setEnabled(true);
+            btnNextRand.setEnabled(true);
+            btnClear.setEnabled(true);
+            btnColor.setEnabled(true);
             /* Load the next drawing */
             nextImage(v);
         });

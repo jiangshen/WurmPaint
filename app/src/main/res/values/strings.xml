@@ -82,6 +82,16 @@
     <string name="change_log_text" translatable="false">
         <![CDATA[
             <h1>Changelog</h1>
+                <h3>2.03 (2018-05-09)</h3>
+                    <span>
+                        - Added Help screen <br />
+                        - Added Wurm Logbook to display drawing history <br />
+                        - Updated app icon <br />
+                        - Updated notification icon <br />
+                        - Updated Navigation Drawer profile icon <br />
+                        - Fixed an issue on some phones where pressing the Settings back button does not correctly go back to the drawing screen<br />
+                        - Disabled controls when sending images <br />
+                    </span>
                 <h3>1.09 (2018-4-28)</h3>
                     <span>
                         - Updated Achievements scoring <br />

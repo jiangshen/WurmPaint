@@ -8,6 +8,15 @@ Android drawing application for annotating the backbone of worms.
 
 ## Releases
 
+### 2.03 (2018-05-09)
+- Added Help screen
+- Added Wurm Logbook to display drawing history
+- Updated app icon
+- Updated notification icon
+- Updated Navigation Drawer profile icon
+- Fixed an issue on some phones where pressing the Settings back button does not correctly go back to the drawing screen
+- Disabled controls when sending images 
+
 ### 1.09 (2018-4-28)
 - Updated Achievements scoring
 - Updated LeaderBoard submissions

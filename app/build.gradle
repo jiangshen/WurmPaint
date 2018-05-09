@@ -9,13 +9,13 @@ android {
         applicationId "com.caden.drawing.wurmpaint"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 2
-        versionName "2.0"
+        versionCode 4
+        versionName "2.02"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
