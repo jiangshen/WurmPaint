@@ -39,4 +39,6 @@
     <string name="pref_color_wheel_title">颜色圈类型</string>
     <string name="title_activity_help">Help the Wurms!</string>
     <string name="title_activity_wurm_history">Wurm Logbook</string>
+    <string name="text_wurms_annotated">Wurms Annotated</string>
+    <string name="text_hours_saved">Hours Saved</string>
 </resources>

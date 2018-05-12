@@ -6,6 +6,6 @@
         android:id="@+id/menu_info"
         android:icon="@drawable/ic_info"
         app:showAsAction="ifRoom"
-        android:title="@string/about_text">
+        android:title="@string/feedback_text">
     </item>
 </menu>

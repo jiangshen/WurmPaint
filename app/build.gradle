@@ -9,8 +9,8 @@ android {
         applicationId "com.caden.drawing.wurmpaint"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 4
-        versionName "2.02"
+        versionCode 7
+        versionName "2.04"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -48,15 +48,16 @@ dependencies {
 
     compile 'com.google.firebase:firebase-storage:15.0.2'
     compile 'com.google.firebase:firebase-auth:15.1.0'
-    compile 'com.google.android.gms:play-services-auth:15.0.0'
-    compile 'com.google.android.gms:play-services-games:15.0.0'
+    compile 'com.google.android.gms:play-services-auth:15.0.1'
+    compile 'com.google.android.gms:play-services-games:15.0.1'
     compile 'com.google.firebase:firebase-messaging:15.0.2'
-    compile 'com.google.firebase:firebase-database:15.0.0'
+    compile 'com.google.firebase:firebase-database:15.0.1'
     compile 'com.google.firebase:firebase-perf:15.1.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true
     }
     compile 'com.google.firebase:firebase-core:15.0.2'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }
 
 apply plugin: 'com.google.gms.google-services'

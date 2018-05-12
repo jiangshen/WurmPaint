@@ -1,5 +1,6 @@
 package com.caden.drawing.wurmpaint;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -7,6 +8,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -15,6 +19,7 @@ import android.support.constraint.ConstraintSet;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,6 +32,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -54,6 +60,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
@@ -202,21 +209,6 @@ public class DrawingActivity extends AppCompatActivity
             menu.findItem(R.id.nav_gplay_setting).setEnabled(false);
         }
 
-//        FIXME get user profile photo
-//        ImageView navUserImgView = navHeaderLayout.findViewById(R.id.nav_imgview);
-//        navUserImgView.setImageBitmap(getImageBitmap(mUser.getPhotoUrl().toString()));
-//
-//        Uri userPhotoUrl = mUser.getPhotoUrl();
-//        if (userPhotoUrl != null){
-//            try {
-//                Bitmap userBMP = MediaStore.Images.Media.
-//                        getBitmap(this.getContentResolver(), userPhotoUrl);
-//                navUserImgView.setImageBitmap(userBMP);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
         constraintSet.clone(clDrawMain);
         dp56 = Util.dpToPx(56, getResources().getDisplayMetrics());
         fabSend = findViewById(R.id.fab_send);
@@ -240,6 +232,8 @@ public class DrawingActivity extends AppCompatActivity
             Games.getGamesClient(this, gAcct).setViewForPopups(clDrawMain);
             mAchClient = Games.getAchievementsClient(this, gAcct);
             mLeadClient = Games.getLeaderboardsClient(this, gAcct);
+            ImageView navUserImageView = navHeaderLayout.findViewById(R.id.nav_imgview);
+            Picasso.get().load(gAcct.getPhotoUrl()).into(navUserImageView);
         }
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -334,27 +328,15 @@ public class DrawingActivity extends AppCompatActivity
     }
 
     private void feedbackScreen() {
-        View aboutDialogView =
-                getLayoutInflater().inflate(R.layout.dialog_feedback,
-                        new ConstraintLayout(this), false);
-
-        TextView feedbackText = aboutDialogView.findViewById(R.id.tv_feedback);
-        RatingBar ratingBar = aboutDialogView.findViewById(R.id.ratingBar);
-
         new AlertDialog.Builder(this)
-                .setView(aboutDialogView)
-                .setMessage(R.string.about_text)
-                .setTitle(R.string.app_name)
-                .setPositiveButton("OK", (dialog, id) -> {
-                    mDatabase.child("ratings").child(userUID)
-                            .child("feedback").setValue(feedbackText.getText().toString());
-                    mDatabase.child("ratings").child(userUID)
-                            .child("rating").setValue(ratingBar.getRating());
-                    mDatabase.child("ratings").child(userUID)
-                            .child("email").setValue(userEmail);
-                    dialog.dismiss();
-                })
-                .show();
+            .setMessage(R.string.feedback_text)
+            .setTitle(R.string.app_name)
+            .setPositiveButton("Rate us now", (dialog, id) -> {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
+                dialog.dismiss();
+            })
+            .setNegativeButton("Maybe Later", ((dialog, id) -> dialog.cancel()))
+            .show();
     }
 
     @Override
@@ -393,15 +375,15 @@ public class DrawingActivity extends AppCompatActivity
 
     private void logOut() {
         new AlertDialog.Builder(this)
-                .setTitle(R.string.app_name)
-                .setMessage("Are you sure you want to log out?")
-                .setPositiveButton("YES", (dialog, id) -> {
-                    FirebaseAuth.getInstance().signOut();
-                    Intent i = new Intent(this, LoginActivity.class);
-                    startActivity(i);
-                })
-                .setNegativeButton("NO", (dialog, id) -> dialog.cancel())
-                .show();
+            .setTitle(R.string.app_name)
+            .setMessage("Are you sure you want to log out?")
+            .setPositiveButton("YES", (dialog, id) -> {
+                FirebaseAuth.getInstance().signOut();
+                Intent i = new Intent(this, LoginActivity.class);
+                startActivity(i);
+            })
+            .setNegativeButton("NO", (dialog, id) -> dialog.cancel())
+            .show();
     }
 
     private void showAbout() {
@@ -499,10 +481,12 @@ public class DrawingActivity extends AppCompatActivity
     public void sendImage(View v) {
 
         if (!alreadyDrawn) {
-            Snackbar.make(drawer, "Draw something before sending", Snackbar.LENGTH_SHORT)
-                    .setAction("Dismiss", view -> {
-                    })
-                    .show();
+            Snackbar.make(clDrawMain, "Draw something before sending", Snackbar.LENGTH_SHORT)
+                .setAction("Dismiss", view -> {}).show();
+            return;
+        }
+        if (!isOnline()) {
+            Snackbar.make(clDrawMain, "No internet connection", Snackbar.LENGTH_SHORT).show();
             return;
         }
 
@@ -585,46 +569,47 @@ public class DrawingActivity extends AppCompatActivity
         mDatabase.child("user_history").child("user_totals").child(userUID).setValue(userHistoryTotal);
     }
 
+    public boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert cm != null;
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
     public void markAsBad(View v) {
         /* Update Database Reference */
         View aboutDialogView =
                 getLayoutInflater().inflate(R.layout.dialog_img_comments,
                         new ConstraintLayout(this), false);
         TextView reasonText = aboutDialogView.findViewById(R.id.tv_mark_reason);
-        reasonText.setEnabled(false);
+        TextInputLayout reasonTextLayout = aboutDialogView.findViewById(R.id.til_mark_reason);
+        reasonTextLayout.setEnabled(false);
         RadioGroup rG = aboutDialogView.findViewById(R.id.radioGroup);
         RadioButton rbOther = aboutDialogView.findViewById(R.id.rb_other);
-        rG.setOnCheckedChangeListener(((radioGroup, i) -> {
-            if (i == rbOther.getId()) {
-                reasonText.setEnabled(true);
-            } else {
-                reasonText.setEnabled(false);
-            }
-        }));
+        rG.setOnCheckedChangeListener(((radioGroup, i) -> reasonTextLayout.setEnabled(i == rbOther.getId())));
 
         new AlertDialog.Builder(this)
-                .setView(aboutDialogView)
-                .setMessage(R.string.reason_marking_image)
-                .setTitle(R.string.app_name)
-                .setPositiveButton("OK", (dialog, id) -> {
-                    String textToSend = "";
-                    int selId = rG.getCheckedRadioButtonId();
-                    if (selId == rbOther.getId()) {
-                        if (reasonText.getText() != null) {
-                            textToSend = reasonText.getText().toString();
-                        }
-                    } else {
-                        RadioButton selRB = aboutDialogView.findViewById(selId);
-                        textToSend = selRB.getText().toString();
+            .setView(aboutDialogView)
+            .setTitle(R.string.app_name)
+            .setPositiveButton("OK", (dialog, id) -> {
+                String textToSend = "";
+                int selId = rG.getCheckedRadioButtonId();
+                if (selId == rbOther.getId()) {
+                    if (reasonText.getText() != null) {
+                        textToSend = reasonText.getText().toString();
                     }
-                    mDatabase.child("bad_images").child(currBatchName).child(String.valueOf(currImgNo))
-                            .child(userUID).setValue(textToSend);
-                    updateReporterAchievements();
-                    nextImage(v);
-                    dialog.dismiss();
-                })
-                .setNegativeButton("Cancel", (dialog, id) -> dialog.cancel())
-                .show();
+                } else {
+                    RadioButton selRB = aboutDialogView.findViewById(selId);
+                    textToSend = selRB.getText().toString();
+                }
+                mDatabase.child("bad_images").child(currBatchName).child(String.valueOf(currImgNo))
+                        .child(userUID).setValue(textToSend);
+                updateReporterAchievements();
+                nextImage(v);
+                dialog.dismiss();
+            })
+            .setNegativeButton("Cancel", (dialog, id) -> dialog.cancel())
+            .show();
     }
 
     private void updateWurmsAchievements() {
@@ -668,8 +653,7 @@ public class DrawingActivity extends AppCompatActivity
                 initWithImage((HashMap) dataSnapshot.getValue());
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
     }
 
@@ -680,8 +664,7 @@ public class DrawingActivity extends AppCompatActivity
                 readUserScore((HashMap)dataSnapshot.getValue());
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
 
     }
@@ -726,7 +709,6 @@ public class DrawingActivity extends AppCompatActivity
             mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
                 SharedData.imgData = bytes;
                 clear(findViewById(R.id.cl_draw_main));
-            }).addOnFailureListener(exception -> {
             });
         }
 
@@ -752,7 +734,7 @@ public class DrawingActivity extends AppCompatActivity
             mStorageRef.getBytes(FIVE_HUNDRED_KILOBYTE).addOnSuccessListener(bytes -> {
                 SharedData.imgData = bytes;
                 clear(v);
-            }).addOnFailureListener(exception -> {});
+            });
         }
     }
 }

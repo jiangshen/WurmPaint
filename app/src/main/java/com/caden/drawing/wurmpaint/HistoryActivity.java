@@ -38,6 +38,7 @@ public class HistoryActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setElevation(0);
         }
 
         rvHistoryAdapter = new RVHistoryAdapter();

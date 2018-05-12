@@ -15,6 +15,7 @@ public class HelpActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setElevation(0);
         }
 
         WebView wvHelp = findViewById(R.id.wv_help);

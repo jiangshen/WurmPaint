@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -18,6 +19,7 @@ import java.util.Locale;
 public class WurmMeterActivity extends AppCompatActivity {
 
     DatabaseReference mDatabase;
+    ImageView ivInfo;
     TextView tvInfo;
 
     @Override
@@ -36,6 +38,7 @@ public class WurmMeterActivity extends AppCompatActivity {
         TextView tvHours = findViewById(R.id.tv_hours);
         float hr = (float) SharedData.userScore / 15;
         tvHours.setText(String.format(Locale.getDefault(), "%.1f", hr));
+        ivInfo = findViewById(R.id.iv_info);
         tvInfo = findViewById(R.id.tv_info);
 
         if (SharedData.isGoogleSignIn) {
@@ -50,8 +53,7 @@ public class WurmMeterActivity extends AppCompatActivity {
                 updateTotal((HashMap) dataSnapshot.getValue());
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
+            public void onCancelled(DatabaseError databaseError) {}
         });
     }
 
@@ -63,14 +65,11 @@ public class WurmMeterActivity extends AppCompatActivity {
 
     private void updateTotal(HashMap dict) {
         int total = 0;
-        if (dict != null) {
-            for (Object i : dict.values()) {
-                total += Util.longToInt((Long) i);
-            }
-        }
+        if (dict != null) for (Object i : dict.values()) total += Util.longToInt((Long) i);
         float contribution = (float) SharedData.userScore / total;
         tvInfo.setText(String.format(Locale.getDefault(),
                 "%d Wurms annotated so far, you have contributed %.2f%% to the Wurm Community!",
                 total, contribution * 100));
+        if (ivInfo.getVisibility() == View.INVISIBLE) ivInfo.setVisibility(View.VISIBLE);
     }
 }

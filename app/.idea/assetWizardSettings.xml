@@ -16,12 +16,29 @@
                             <entry key="launcherLegacy">
                               <value>
                                 <PersistentState>
+                                  <option name="children">
+                                    <map>
+                                      <entry key="image">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="trimmed" value="true" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                    </map>
+                                  </option>
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
+                                      <entry key="backgroundColor" value="000000" />
+                                      <entry key="cropped" value="true" />
                                       <entry key="iconShape" value="NONE" />
-                                      <entry key="imageAsset" value="$USER_HOME$/Desktop/simpleicon.png" />
-                                      <entry key="outputName" value="ic_wurm_icon" />
+                                      <entry key="imageAsset" value="$USER_HOME$/Google Drive/Georgia Tech/Research/EBB 2017-2018/simpleicon square.jpg" />
+                                      <entry key="outputName" value="ic_default_profile" />
                                     </map>
                                   </option>
                                 </PersistentState>

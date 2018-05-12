@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Wurm Paint</string>
-    <string name="about_text" translatable="false">Created by Caden 2017, I love to hear your feedback on the app,
-        feel free to post your response below!</string>
-
+    <string name="feedback_text" translatable="false">
+        I would love to hear your feedback on the app, please rate us so that we can do better!
+    </string>
     <string name="start_text">Start</string>
     <string name="register_text">Register</string>
     <string name="sign_in_text">Sign In</string>
@@ -216,5 +216,9 @@
     <string name="content_desc_iv_tip" translatable="false">Light bulb graphic</string>
     <string name="title_activity_help">Help the Wurms!</string>
     <string name="title_activity_wurm_history">Wurm Logbook</string>
+    <string name="content_desc_usr_profile_img" translatable="false">User profile image</string>
+    <string name="content_desc_quote_image" translatable="false">Quote image</string>
+    <string name="text_wurms_annotated">Wurms Annotated</string>
+    <string name="text_hours_saved">Hours Saved</string>
 
 </resources>
