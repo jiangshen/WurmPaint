@@ -1,7 +1,6 @@
 package com.caden.drawing.wurmpaint;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 
 public class DrawRenderer {

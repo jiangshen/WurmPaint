@@ -22,6 +22,11 @@
         android:key="game_category">
         <SwitchPreference
             android:defaultValue="false"
+            android:key="is_sequential"
+            android:title="Sequential Images"
+            android:summary="Load images in order" />
+        <SwitchPreference
+            android:defaultValue="false"
             android:key="draw_color"
             android:title="Enable color"
             android:summary="Allows drawing in different colors" />

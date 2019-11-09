@@ -11,8 +11,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
+import androidx.appcompat.app.ActionBar;
 import android.view.MenuItem;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -131,11 +130,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                             .putBoolean("draw_in_color", true).apply();
                 }
                 /* Set Listener for further changes */
-                colorPref.setOnPreferenceChangeListener(((p, o) -> {
+                colorPref.setOnPreferenceChangeListener((p, o) -> {
                     sharedPrefs.edit().putBoolean("draw_in_color", (boolean) o).apply();
                     return true;
-                }));
+                });
             }
+            SwitchPreference isSeqPref = (SwitchPreference) findPreference("is_sequential");
+            isSeqPref.setOnPreferenceChangeListener((p, o) -> {
+                sharedPrefs.edit().putBoolean("is_sequential", (boolean) o).apply();
+                return true;
+            });
         }
 
         @Override

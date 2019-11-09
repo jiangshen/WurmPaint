@@ -7,9 +7,9 @@ import java.util.List;
 //to draw a character model
 public class DrawModel {
     //initialize beginning of the line coordinate
-    public static class LineElem {
-        public float x;
-        public float y;
+    static class LineElem {
+        float x;
+        float y;
 
         //internal representation for manipulation
         private LineElem(float x, float y) {
@@ -19,7 +19,7 @@ public class DrawModel {
     }
 
     //for a single line
-    public static class Line {
+    static class Line {
         //a line consists of a set of elements (small parts of a line)
         private List<LineElem> elems = new ArrayList<>();
 
@@ -30,15 +30,15 @@ public class DrawModel {
             elems.add(elem);
         }
 
-        public int getElemSize() {
+        int getElemSize() {
             return elems.size();
         }
 
-        public LineElem getElem(int index) {
+        LineElem getElem(int index) {
             return elems.get(index);
         }
 
-        public List<LineElem> getAllLineElem() {
+        List<LineElem> getAllLineElem() {
             return elems;
         }
     }
@@ -54,7 +54,7 @@ public class DrawModel {
     private List<Line> mLines = new ArrayList<>();
 
     //given a set 28 by 28 sized window
-    public DrawModel(int width, int height) {
+    DrawModel(int width, int height) {
         this.mWidth = width;
         this.mHeight = height;
     }
@@ -68,33 +68,31 @@ public class DrawModel {
     }
 
     //start drawing line and add it to memory
-    public void startLine(float x, float y) {
+    void startLine(float x, float y) {
         mCurrentLine = new Line();
         mCurrentLine.addElem(new LineElem(x, y));
         mLines.add(mCurrentLine);
     }
 
-    public void endLine() {
+    void endLine() {
         mCurrentLine = null;
     }
 
-    public void addLineElem(float x, float y) {
+    void addLineElem(float x, float y) {
         if (mCurrentLine != null) {
             mCurrentLine.addElem(new LineElem(x, y));
         }
     }
 
-    public int getLineSize() {
+    int getLineSize() {
         return mLines.size();
     }
 
-    public Line getLine(int index) {
+    Line getLine(int index) {
         return mLines.get(index);
     }
 
-    public void clear() {
+    void clear() {
         mLines.clear();
     }
-
-
 }

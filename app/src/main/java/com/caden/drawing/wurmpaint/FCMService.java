@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -14,6 +14,17 @@ import com.google.firebase.messaging.RemoteMessage;
 public class FCMService extends FirebaseMessagingService {
 
     final int RC_Notify_ID = 1733;
+
+    @Override
+    public void onNewToken(String s) {
+        super.onNewToken(s);
+        // Get updated InstanceID token.
+        // If you want to send messages to this application instance or
+        // manage this apps subscriptions on the server side, send the
+        // Instance ID token to your app server.
+
+        //TODO: Send Token to Server
+    }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {

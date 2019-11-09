@@ -13,19 +13,19 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.transition.TransitionManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +36,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.flask.colorpicker.ColorPickerView;
@@ -237,9 +236,10 @@ public class DrawingActivity extends AppCompatActivity
         }
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        btnNextRand.setText(sharedPref.getBoolean("is_sequential", false) ?
+                "NEXT IN LINE" : "NEXT RANDOM");
         btnColor.setVisibility(sharedPref.getBoolean("draw_in_color", false) ?
                 View.VISIBLE : View.INVISIBLE);
-
         SharedData.lineColor =
                 sharedPref.getInt("line_color", Color.parseColor("#FF2646"));
         btnColor.setBackgroundTintList(ColorStateList.valueOf(SharedData.lineColor));
@@ -347,6 +347,8 @@ public class DrawingActivity extends AppCompatActivity
             Intent i = new Intent(this, LoginActivity.class);
             startActivity(i);
         }
+        btnNextRand.setText(sharedPref.getBoolean("is_sequential", false) ?
+                "NEXT IN LINE" : "NEXT RANDOM");
         btnColor.setVisibility(sharedPref.getBoolean("draw_in_color", false) ?
                 View.VISIBLE : View.INVISIBLE);
         mUser.reload().addOnCompleteListener(task -> {
@@ -554,8 +556,8 @@ public class DrawingActivity extends AppCompatActivity
         /* Update Database Reference */
         mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
             .child(timeFormat.format(date)).child("image_name").setValue(uuid.toString());
-        mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
-                .child(timeFormat.format(date)).child("user_email").setValue(userEmail);
+//        mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
+//                .child(timeFormat.format(date)).child("user_email").setValue(userEmail);
         mDatabase.child("uploads").child(currBatchName).child(String.valueOf(currImgNo)).child(dateFormat.format(date))
                 .child(timeFormat.format(date)).child("user_uid").setValue(userUID);
         /* Upload Database Line Data */
@@ -698,7 +700,11 @@ public class DrawingActivity extends AppCompatActivity
 
             currBatchName = keyArray[randKey];
             currBatchSize = Util.longToInt((Long) dict.get(currBatchName));
-            currImgNo = rand.nextInt(currBatchSize) + 1;
+            if (sharedPref.getBoolean("is_sequential", false)) {
+                currImgNo = 1;
+            } else {
+                currImgNo = rand.nextInt(currBatchSize) + 1;
+            }
             tvImageName.setText(String.format(Locale.getDefault(), "%s / %d.png", currBatchName, currImgNo));
 
             /* Load Drawing */
@@ -716,14 +722,19 @@ public class DrawingActivity extends AppCompatActivity
 
     public void nextImage(View v) {
         if (uploadsDict != null) {
+            boolean isSeq = sharedPref.getBoolean("is_sequential", false);
             Set keys = uploadsDict.keySet();
             int keyLen = keys.size();
             String[] keyArray = (String[]) keys.toArray(new String[keyLen]);
             Random rand = new Random();
             int randKey = rand.nextInt(keyLen);
-            currBatchName = keyArray[randKey];
+            currBatchName = isSeq ? currBatchName : keyArray[randKey];
             currBatchSize = Util.longToInt((Long) uploadsDict.get(currBatchName));
-            currImgNo = rand.nextInt(currBatchSize) + 1;
+            if (isSeq) {
+                if (++currImgNo > currBatchSize) currImgNo = 1;
+            } else {
+                currImgNo = rand.nextInt(currBatchSize) + 1;
+            }
             tvImageName.setText(String.format(Locale.getDefault(),"%s / %d.png", currBatchName, currImgNo));
 
             /* Load Drawing */

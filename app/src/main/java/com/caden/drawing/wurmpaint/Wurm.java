@@ -1,6 +1,6 @@
 package com.caden.drawing.wurmpaint;
 
-public class Wurm {
+class Wurm {
 
     private String wurmDate;
     private String wurmTime;
@@ -18,19 +18,19 @@ public class Wurm {
         this("", "", "", 0);
     }
 
-    public String getWurmDate() {
+    String getWurmDate() {
         return this.wurmDate;
     }
 
-    public String getWurmTime() {
+    String getWurmTime() {
         return this.wurmTime;
     }
 
-    public String getWurmBatchName() {
+    String getWurmBatchName() {
         return this.wurmBatchName;
     }
 
-    public int getWurmImgNo() {
+    int getWurmImgNo() {
         return this.wurmImgNo;
     }
 }

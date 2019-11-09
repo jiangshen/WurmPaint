@@ -13,7 +13,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="64dp"
         android:layout_height="64dp"
         app:cardCornerRadius="32dp"
@@ -27,7 +27,7 @@
             app:srcCompat="@mipmap/ic_default_profile"
             android:background="#000000"
             android:contentDescription="@string/content_desc_usr_profile_img" />
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
     <TextView
         android:id="@+id/nav_drawer_name"
         android:layout_width="match_parent"

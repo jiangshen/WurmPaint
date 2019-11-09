@@ -3,15 +3,15 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 28
+//    buildToolsVersion '26.0.3'
     defaultConfig {
         applicationId "com.caden.drawing.wurmpaint"
         minSdkVersion 21
-        targetSdkVersion 26
-        versionCode 8
-        versionName "2.05"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        targetSdkVersion 28
+        versionCode 9
+        versionName "2.06"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -31,32 +31,33 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:26.1.0'
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation ('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support.constraint:constraint-layout:1.1.0'
-    compile 'com.android.support:cardview-v7:26.1.0'
-    compile 'com.android.support:recyclerview-v7:26.1.0'
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:design:26.1.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.google.android.material:material:1.0.0'
 
-    compile 'com.github.QuadFlask:colorpicker:0.0.13'
+    implementation 'com.github.QuadFlask:colorpicker:0.0.13'
 
-    compile 'com.google.firebase:firebase-storage:15.0.2'
-    compile 'com.google.firebase:firebase-auth:15.1.0'
-    compile 'com.google.android.gms:play-services-auth:15.0.1'
-    compile 'com.google.android.gms:play-services-games:15.0.1'
-    compile 'com.google.firebase:firebase-messaging:15.0.2'
-    compile 'com.google.firebase:firebase-database:15.0.1'
-    compile 'com.google.firebase:firebase-perf:15.2.0'
-    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+    implementation 'com.google.firebase:firebase-storage:19.1.0'
+    implementation 'com.google.firebase:firebase-auth:19.1.0'
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.android.gms:play-services-games:18.0.1'
+    implementation 'com.google.firebase:firebase-messaging:20.0.0'
+    implementation 'com.google.firebase:firebase-database:19.2.0'
+    implementation 'com.google.firebase:firebase-perf:19.0.1'
+    implementation ('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true
     }
-    compile 'com.google.firebase:firebase-core:15.0.2'
+    implementation 'com.google.firebase:firebase-core:17.2.1'
     implementation 'com.squareup.picasso:picasso:2.71828'
 }
 
