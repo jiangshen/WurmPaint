@@ -82,6 +82,25 @@
     <string name="change_log_text" translatable="false">
         <![CDATA[
             <h1>Changelog</h1>
+                <h3>2.07 (2019-11-09)</h3>
+                    <span>
+                        - General bug fixes and stability improvements
+                    </span>
+                <h3>2.06 (2018-09-10)</h3>
+                    <span>
+                        - Added ability to switch between loading images randomly or in order
+                    </span>
+                <h3>2.05 (2018-05-16)</h3>
+                    <span>
+                        - Google users can now see their profile picture in the navigation bar
+                        - Minor design layout color changes
+                    </span>
+                <h3>2.04 (2018-05-09)</h3>
+                    <span>
+                        - Loads user profile picture from Google
+                        - Updated feedback mechanism
+                        - Warns user when there is no internet connection
+                    </span>
                 <h3>2.03 (2018-05-09)</h3>
                     <span>
                         - Added Help screen <br />

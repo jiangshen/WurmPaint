@@ -7,16 +7,43 @@ Android drawing application for annotating the backbone of worms.
 ![](screens/scr_1.jpg)|![](screens/scr_2.jpg)|![](screens/scr_3.jpg)
 
 ## System Requirements
-Android Lollipop (5.0) or higher
-Software has been tested on Android Lollipop, Marshmallow, Nougat and Oreo
+
+Android Lollipop (5.0) or higher recommended.
+
+Software has been tested on:
+
+| Name                | Version |
+|---------------------|:-------:|
+| Android Lollipop    |   5.0   |
+| Android Marshmallow |   6.0   |
+| Android Nougat      |   7.0   |
+| Android Oreo        |   8.0   |
+| Android Pie         |   9.0   |
+| Android Q           |   10.0  |
 
 ## Installation of Demo
+
 Visit the [Google Play Store](https://play.google.com/store/apps/details?id=com.caden.drawing.wurmpaint) on your Android device to install. Installation takes less than a minute on most devices, and images from our cloud-based dataset should load in < 1s on most WiFi networks.
 
 ## App reproduction with novel data
 Please see our [wiki](https://github.com/jiangshen/WurmPaint/wiki) for instructions.
 
 ## Releases
+
+### 2.07 (2019-11-09)
+- General bug fixes and stability improvements
+
+### 2.06 (2018-09-10)
+- Added ability to switch between loading images randomly or in order
+
+### 2.05 (2018-05-16)
+- Google users can now see their profile picture in the navigation bar
+- Minor design layout color changes
+
+### 2.04 (2018-05-09)
+- Loads user profile picture from Google
+- Updated feedback mechanism
+- Warns user when there is no internet connection
 
 ### 2.03 (2018-05-09)
 - Added Help screen
