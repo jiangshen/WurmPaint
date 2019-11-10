@@ -18,15 +18,21 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+#-keepattributes SourceFile,LineNumberTable 
 
 # If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# hide the original source file name. 
+#-renamesourcefileattribute SourceFile  
 
 -keepattributes Signature
--keepattributes *Annotation*
-# FireBase Ignore
--keep class com.caden.drawing.wurmpaint.Wurm { *; }
--Keep class com.caden.drawing.wurmpaint.DrawModel.LineElem { *; }
+-keepattributes *Annotation* 
+
+# Keep these files that FireBase need to correctly send and receive data
 -keep class com.google.firebase.** { *; }
+-keep class com.caden.drawing.wurmpaint.** { *; }
+#-keep class com.caden.drawing.wurmpaint.DrawModel.** { *; }
+#-keep class com.caden.drawing.wurmpaint.DrawRenderer.** { *; }
+#-keep class com.caden.drawing.wurmpaint.DrawView.** { *; }
+#-keep class com.caden.drawing.wurmpaint.Wurm.** { *; }
+#-keep class com.caden.drawing.wurmpaint.DrawingActivity.** { *; }
+#-keep class com.caden.drawing.wurmpaint.SharedData.** { *; }
