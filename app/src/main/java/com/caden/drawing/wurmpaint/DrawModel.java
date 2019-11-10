@@ -3,30 +3,53 @@ package com.caden.drawing.wurmpaint;
 import java.util.ArrayList;
 import java.util.List;
 
-//a collection of getter and set functions
-//to draw a character model
+/**
+ * Defines the Drawing Model
+ */
 public class DrawModel {
-    //initialize beginning of the line coordinate
-    static class LineElem {
+
+    public static class LineElem {
         float x;
         float y;
 
         //internal representation for manipulation
-        private LineElem(float x, float y) {
+        public LineElem(float x, float y) {
             this.x = x;
+            this.y = y;
+        }
+
+        // Note: Public Getters and Setters for FireBase
+        public float getX() {
+            return x;
+        }
+
+        public void setX(float x) {
+            this.x = x;
+        }
+
+        public float getY() {
+            return y;
+        }
+
+        public void setY(float y) {
             this.y = y;
         }
     }
 
-    //for a single line
+    /**
+     * Defines a single Line
+     */
     static class Line {
-        //a line consists of a set of elements (small parts of a line)
-        private List<LineElem> elems = new ArrayList<>();
 
-        private Line() {
+        /**
+         * A line consists of a set of elements (small parts of a line)
+         */
+        List<LineElem> elems = new ArrayList<>();
+
+        Line() {
         }
         //add, get, and get index of an element
-        private void addElem(LineElem elem) {
+        void addElem(LineElem elem) {
             elems.add(elem);
         }
 
@@ -45,16 +68,18 @@ public class DrawModel {
 
     private Line mCurrentLine;
 
-    private int mWidth;  // pixel width = 28
-    private int mHeight; // pixel height = 28
+    // Pixel width & height = 28
+    private int mWidth;
+    private int mHeight;
 
-    //so a model consists of lines which consists of elements
-    //a line begins when a user starts drawing and ends when
-    //they lift their finger up
+    /**
+     * A model consists of lines which consists of elements
+     * A line begins when a user starts drawing and ends when they lift their finger up
+     */
     private List<Line> mLines = new ArrayList<>();
 
     //given a set 28 by 28 sized window
-    DrawModel(int width, int height) {
+    public DrawModel(int width, int height) {
         this.mWidth = width;
         this.mHeight = height;
     }
@@ -67,7 +92,7 @@ public class DrawModel {
         return mHeight;
     }
 
-    //start drawing line and add it to memory
+    // Start drawing line and add it to memory
     void startLine(float x, float y) {
         mCurrentLine = new Line();
         mCurrentLine.addElem(new LineElem(x, y));

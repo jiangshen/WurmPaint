@@ -1,6 +1,8 @@
 package com.caden.drawing.wurmpaint;
 
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
@@ -49,11 +51,11 @@ public class WurmMeterActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("user_scores").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 updateTotal((HashMap) dataSnapshot.getValue());
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {}
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
 

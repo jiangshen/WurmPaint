@@ -27,7 +27,7 @@ public class DrawView extends View {
     private int mDrawnLineSize = 0;
     private boolean mHasBeenSetup = false;
 
-    private float mTmpPoints[] = new float[2];
+    private float[] mTmpPoints = new float[2];
 
     public DrawView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

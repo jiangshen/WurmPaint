@@ -2,6 +2,8 @@ package com.caden.drawing.wurmpaint;
 
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -60,7 +62,7 @@ public class HistoryActivity extends AppCompatActivity {
         if (SharedData.userTotal > 0) {
             mDatabase.child("user_history").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     GenericTypeIndicator<List<Wurm>> gtInd = new GenericTypeIndicator<List<Wurm>>(){};
                     List<Wurm> wurms = dataSnapshot.getValue(gtInd);
                     if (wurms != null) {
@@ -71,7 +73,7 @@ public class HistoryActivity extends AppCompatActivity {
                     }
                 }
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
+                public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
             });
         }

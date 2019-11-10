@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -16,14 +18,14 @@ public class FCMService extends FirebaseMessagingService {
     final int RC_Notify_ID = 1733;
 
     @Override
-    public void onNewToken(String s) {
+    public void onNewToken(@NonNull String s) {
         super.onNewToken(s);
         // Get updated InstanceID token.
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
 
-        //TODO: Send Token to Server
+        //Send Token to Server
     }
 
     @Override

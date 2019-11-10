@@ -8,21 +8,21 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/cl_draw_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="com.caden.drawing.wurmpaint.DrawingActivity">
+
         <LinearLayout
             android:id="@+id/drawing_ll"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/color_primary_gradient"
             android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/drawing_appBarLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/drawing_appBarLayout"
             android:layout_width="match_parent"
@@ -60,12 +60,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.cardview.widget.CardView>
-            <TextView
+
+        <TextView
             android:id="@+id/tv_img_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
             android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
             android:fontFamily="monospace"
             android:text="@string/img_name_placeholder"
             android:textColor="@color/common_google_signin_btn_text_light_default"

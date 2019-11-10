@@ -249,7 +249,7 @@ public class DrawingActivity extends AppCompatActivity
         mDatabase.child("user_history").child("user_totals")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HashMap map = (HashMap) dataSnapshot.getValue();
                 if (map != null && map.containsKey(userUID)) {
                     userHistoryTotal = Util.longToInt((Long) map.get(userUID));
@@ -259,7 +259,7 @@ public class DrawingActivity extends AppCompatActivity
                 SharedData.userTotal = userHistoryTotal;
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
     }
@@ -651,22 +651,22 @@ public class DrawingActivity extends AppCompatActivity
     private void fireBaseRetrieveImage() {
         mDatabase.child("master_upload").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 initWithImage((HashMap) dataSnapshot.getValue());
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {}
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
     }
 
     private void fireBaseRetrieveUserScore() {
         mDatabase.child("user_scores").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 readUserScore((HashMap)dataSnapshot.getValue());
             }
             @Override
-            public void onCancelled(DatabaseError databaseError) {}
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
 
     }

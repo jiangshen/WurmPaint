@@ -27,5 +27,6 @@
 -keepattributes Signature
 -keepattributes *Annotation*
 # FireBase Ignore
--keep class com.example.caden.drawingtest.Wurm { *; }
+-keep class com.caden.drawing.wurmpaint.Wurm { *; }
+-Keep class com.caden.drawing.wurmpaint.DrawModel.LineElem { *; }
 -keep class com.google.firebase.** { *; }

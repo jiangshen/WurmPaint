@@ -2,6 +2,8 @@ package com.caden.drawing.wurmpaint;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -29,24 +31,25 @@ public class RVHistoryAdapter extends RecyclerView.Adapter<RVHistoryAdapter.Hist
         this.bmps = new SparseArray<>();
     }
 
-    public void addWurm(Wurm w) {
+    void addWurm(Wurm w) {
         this.wurms.add(w);
         this.notifyDataSetChanged();
     }
 
+    @NonNull
     @Override
     public HistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new HistoryViewHolder(LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_history_row, parent, false));
     }
 
-    public void updateImage(int i, Bitmap bmp) {
+    void updateImage(int i, Bitmap bmp) {
         bmps.put(i, bmp);
         this.notifyDataSetChanged();
     }
 
     @Override
-    public void onBindViewHolder(HistoryViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
         Wurm wurm = this.wurms.get(position);
         if (bmps.get(SharedData.totalWurmsDrawn - position - 1) != null)
             holder.ivHistory.setImageBitmap(bmps.get(SharedData.totalWurmsDrawn - position - 1));
@@ -64,7 +67,6 @@ public class RVHistoryAdapter extends RecyclerView.Adapter<RVHistoryAdapter.Hist
 
     static class HistoryViewHolder extends RecyclerView.ViewHolder {
 
-        private LinearLayout llHistory;
         private ImageView ivHistory;
         private TextView tvDateTime;
         private TextView tvFileName;
@@ -72,7 +74,7 @@ public class RVHistoryAdapter extends RecyclerView.Adapter<RVHistoryAdapter.Hist
 
         HistoryViewHolder(View itemView) {
             super(itemView);
-            llHistory = itemView.findViewById(R.id.ll_history);
+            LinearLayout llHistory = itemView.findViewById(R.id.ll_history);
             llHistory.setBackgroundColor(Color.parseColor(colors[rand.nextInt(colors.length)]));
             ivHistory = itemView.findViewById(R.id.iv_history);
             tvDateTime = itemView.findViewById(R.id.tv_date_time);

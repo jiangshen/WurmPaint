@@ -130,15 +130,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.sign_in_button:
-                if (!isOnline()) {
-                    Snackbar.make(root, "No internet connection", Snackbar.LENGTH_SHORT).show();
-                    return;
-                }
-                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-                startActivityForResult(signInIntent, RC_SIGN_IN);
-                break;
+        if (v.getId() == R.id.sign_in_button) {
+            if (!isOnline()) {
+                Snackbar.make(root, "No internet connection", Snackbar.LENGTH_SHORT).show();
+                return;
+            }
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_SIGN_IN);
         }
     }
 
