@@ -7,7 +7,7 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.caden.drawing.wurmpaint"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 9
         versionName "2.06"
