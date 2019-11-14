@@ -37,8 +37,8 @@
     <string name="menu_wurm_meter">虫的成长</string>
     <string name="text_tip"><![CDATA[Switch to a <b>Google</b> account for more achievement and compete with your friends on the leaderboard!]]></string>
     <string name="pref_color_wheel_title">颜色圈类型</string>
-    <string name="title_activity_help">Help the Wurms!</string>
-    <string name="title_activity_wurm_history">Wurm Logbook</string>
+    <string name="title_activity_help">帮帮虫涂涂！</string>
+    <string name="title_activity_wurm_history">虫涂涂 日志</string>
     <string name="text_wurms_annotated">Wurms Annotated</string>
     <string name="text_hours_saved">Hours Saved</string>
 </resources>
