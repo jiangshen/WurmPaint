@@ -2,9 +2,9 @@
 
 Android drawing application for annotating the backbone of worms.
 
- Draw                 | Compete              | Accomplish
-:--------------------:|:--------------------:|:--------------------:
-![](screens/scr_1.jpg)|![](screens/scr_2.jpg)|![](screens/scr_3.jpg)
+|          Draw          |        Compete         |       Accomplish       |
+|:----------------------:|:----------------------:|:----------------------:|
+| ![](screens/scr_1.jpg) | ![](screens/scr_2.jpg) | ![](screens/scr_3.jpg) |
 
 ## System Requirements
 
@@ -19,7 +19,7 @@ Software has been tested on:
 | Android Nougat      |   7.0   |
 | Android Oreo        |   8.0   |
 | Android Pie         |   9.0   |
-| Android Q           |   10.0  |
+| Android Q           |  10.0   |
 
 ## Installation of Demo
 
